@@ -36,15 +36,18 @@ rem Путь к базам 1С Бухгалтерия
 set source=D:\1C\Base
 rem Путь к месту к папке синхронизации с облаком
 set backup=E:\backup-1C
-rem Путь к WinRar
-set archive="C:\Program Files\WinRAR\rar.exe"
-rem Файл логов (в каталоге со скриптом).
-set logfile=%backup%\backup.log
 rem Сколько дней хранить архивы.
 set NumberArchives=1
 rem Пароль для архивов
 set password=123
 
+rem Рабочий блок
+
+rem Авто определение пути к WinRar
+::  ошибка если не найден
+if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set archive="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set archive="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchive))
+rem Файл логов (в каталоге со скриптом).
+set logfile=%backup%\backup.log
 rem Путь к каталогу со скриптом (автоматически)
 set CurrentDisk="%~dp0"
 
