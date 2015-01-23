@@ -52,17 +52,18 @@ goto log
 move %CurrentDisk%\%date%.rar %backup%
 if exist %backup%\%date%.rar (set result="Задание выполнено успешно") else (set result="Ошибка копирования файла")
 goto log
-:ExistBackup
-set result="Архив был создан ранее"
-goto log
-:NoSourceDir
-set result="Каталог с базами не доступен"
-goto log
-:NoBackupDir
-set result="Каталог для архивирования не доступен"
-goto log
 :NoArchive
 set result="Программа архиватор не доступна"
+goto :error
+:NoSourceDir
+set result="Каталог с базами не доступен"
+goto :error
+:NoBackupDir
+set result="Каталог для архивирования не доступен"
+goto :error
+
+:ExistBackup
+set result="Архив был создан ранее"
 goto log
 :log
 echo %date% >> %logfile%
@@ -71,5 +72,8 @@ echo %result% >> %logfile%
 echo ... >> %logfile%
 if exist %CurrentDisk%\%date%.rar (del %CurrentDisk%\%date%.rar /Q)
 if exist %backup%\%date%.rar (forfiles /P %backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @path")
-chcp 866 >nul
-exit
+if %error%==1 (color 0c
+echo %result%
+pause
+) else (chcp 866 >nul
+exit)

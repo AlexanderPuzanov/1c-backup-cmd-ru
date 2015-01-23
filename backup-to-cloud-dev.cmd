@@ -59,8 +59,6 @@ rem если недоступен каталог с базами
 if not exist %source% (goto NoSourceDir)
 rem если недоступен каталог для архивов
 if not exist %backup% (goto NoBackupDir)
-rem если недоступна программа архиватор
-if not exist %archive% (goto NoArchive)
 
 rem архивирование
 rem аргументы командной строки для rar.exe
@@ -98,21 +96,24 @@ rem проверить результат перемещения и записать в лог файл
 if exist %backup%\%date%.rar (set result="Задание выполнено успешно") else (set result="Ошибка копирования файла")
 goto log
 
+:NoArchive
+set result="Программа архиватор не доступна"
+goto :error
+
+:NoSourceDir
+set result="Каталог с базами не доступен"
+goto :error
+
+:NoBackupDir
+set result="Каталог для архивирования не доступен"
+goto :error
+
 :ExistBackup
 set result="Архив был создан ранее"
 goto log
 
-:NoSourceDir
-set result="Каталог с базами не доступен"
-goto log
-
-:NoBackupDir
-set result="Каталог для архивирования не доступен"
-goto log
-
-:NoArchive
-set result="Программа архиватор не доступна"
-goto log
+:error
+set error=1
 
 :log
 rem запись логов.
@@ -140,7 +141,11 @@ if exist %backup%\%date%.rar (forfiles /P %backup% /M *.rar /D -%NumberArchives%
 rem на случай если скрипт запускался 
 :: другим скриптом возвращаем исходную
 :: кодовою страницу
-chcp 866 >nul
-
-rem закрываем консоль
-rem exit
+rem если есть важные ошибки
+:: меняем цвет текста на красный
+:: ставим скрипт на паузу 
+if %error%==1 (color 0c
+echo %result%
+pause
+) else (chcp 866 >nul
+exit)
