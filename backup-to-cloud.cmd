@@ -40,8 +40,8 @@ set password=123
 
 rem Рабочий блок
 if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set archive="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set archive="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchive))
-set logfile=%backup%\backup.log
 set CurrentDisk="%~dp0"
+set logfile=%CurrentDisk%\backup.log
 if exist %backup%\%date%.rar (goto ExistBackup)
 if not exist %source% (goto NoSourceDir)
 if not exist %backup% (goto NoBackupDir)
@@ -71,6 +71,7 @@ echo %date% >> %logfile%
 echo %time% >> %logfile%
 echo %result% >> %logfile%
 echo ... >> %logfile%
+move %logfile% %backup%\backup.log /Y
 if exist %CurrentDisk%\%date%.rar (del %CurrentDisk%\%date%.rar /Q)
 if exist %backup%\%date%.rar (forfiles /P %backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @path")
 if %error%==1 (color 0c

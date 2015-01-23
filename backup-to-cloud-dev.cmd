@@ -47,9 +47,10 @@ rem Авто определение пути к WinRar
 ::  ошибка если не найден
 if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set archive="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set archive="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchive))
 rem Файл логов (в каталоге со скриптом).
-set logfile=%backup%\backup.log
-rem Путь к каталогу со скриптом (автоматически)
 set CurrentDisk="%~dp0"
+set logfile=%CurrentDisk%\backup.log
+rem Путь к каталогу со скриптом (автоматически)
+
 
 rem обработка ошибок
 rem %date% текущая дата (системная переменная) 
@@ -124,6 +125,8 @@ echo %date% >> %logfile%
 echo %time% >> %logfile%
 echo %result% >> %logfile%
 echo ... >> %logfile%
+rem копируем файл логов в папку для синхронизации
+move %logfile% %backup%\backup.log /Y
 
 rem удаляем файл архива если он остался 
 ::  в каталоге временных файлов
