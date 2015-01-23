@@ -50,7 +50,8 @@ if %ErrorLevel%==0 (goto move) else (set result="Ошибка - %ErrorLevel%")
 goto log
 :move
 move %CurrentDisk%\%date%.rar %backup%
-if exist %backup%\%date%.rar (set result="Задание выполнено успешно") else (set result="Ошибка копирования файла")
+if exist %backup%\%date%.rar (set result="Задание выполнено успешно") else (set result="Ошибка копирования файла"
+goto :error)
 goto log
 :NoArchive
 set result="Программа архиватор не доступна"
