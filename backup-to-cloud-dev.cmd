@@ -123,6 +123,11 @@ rem удаляем файл архива если он остался
 if exist %CurrentDisk%\%date%.rar (del %CurrentDisk%\%date%.rar /Q)
 
 rem удаление старых архивов
+rem forfiles - для каждого файла выполнять
+:: /P %backup% - в каталоге для синхронизации с облаком
+:: /M *.rar - если архив rar
+:: /D -%NumberArchives% - с датой создания более …
+:: /C "cmd /c del /q @path" - удалять без подтверждения
 forfiles /P %backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @path"
 
 rem на случай если скрипт запускался 
