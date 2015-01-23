@@ -93,7 +93,8 @@ rem %date% текущая дата (системная переменная)
 rem переместить архив в папку синхронизации с облаком
 move %CurrentDisk%\%date%.rar %backup%
 rem проверить результат перемещения и записать в лог файл
-if exist %backup%\%date%.rar (set result="Задание выполнено успешно") else (set result="Ошибка копирования файла")
+if exist %backup%\%date%.rar (set result="Задание выполнено успешно") else (set result="Ошибка копирования файла"
+goto :error)
 goto log
 
 :NoArchive
