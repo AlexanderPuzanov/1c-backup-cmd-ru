@@ -42,6 +42,8 @@ rem Файл логов (в каталоге со скриптом).
 set logfile=%backup%\backup.log
 rem Сколько дней хранить архивы.
 set NumberArchives=1
+rem Пароль для архивов
+set password=123
 
 rem Путь к каталогу со скриптом (автоматически)
 set CurrentDisk="%~dp0"
@@ -71,10 +73,10 @@ rem аргументы командной строки для rar.exe
 :: -agDD.MM.YYYY - добавить к имени дату в формате
 :: -ep1   - не сохранять путь к папке,
 ::          что бы предотвратить ошибочную перезапись баз
-:: -hp123 - зашифровать архив включая имена файлов (пароль 123)
+:: -hp    - зашифровать архив включая имена файлов
 :: -k     - заблокировать архив (защита от изменений)
 :: --     - больше нет аргументов
-%archive% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp123 -k %CurrentDisk% %source% --
+%archive% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp%password% -k %CurrentDisk% %source% --
 
 rem результат архивирования
 rem %ErrorLevel% результат выполнения архивирования

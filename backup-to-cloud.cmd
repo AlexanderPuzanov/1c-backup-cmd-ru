@@ -39,6 +39,8 @@ rem Файл логов (в каталоге со скриптом).
 set logfile=%backup%\backup.log
 rem Сколько дней хранить архивы.
 set NumberArchives=10
+rem Пароль для архивов
+set password=123
 
 rem Рабочий блок
 set CurrentDisk="%~dp0"
@@ -46,7 +48,7 @@ if exist %backup%\%date%.rar (goto ExistBackup)
 if not exist %source% (goto NoSourceDir)
 if not exist %backup% (goto NoBackupDir)
 if not exist %archive% (goto NoArchive)
-%archive% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp123 -k %CurrentDisk% %source% --
+%archive% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp%password% -k %CurrentDisk% %source% --
 if %ErrorLevel%==0 (goto move) else (set result="Ошибка - %ErrorLevel%")
 goto log
 :move
