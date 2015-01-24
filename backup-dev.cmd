@@ -1,7 +1,7 @@
 rem отключение вывода сообщений
 rem @echo off
 rem установка кодовой страницы
-chcp 1251 >nul
+chcp 1251 > nul
 rem пропуск интро
 goto start
 --------------------------------------
@@ -14,6 +14,8 @@ goto start
 --------------------------------------
 Разместить скрипт в каталоге
 для хранения резервных копий.
+ВНИМАНИЕ! Путь к катологу не должен 
+содержать пробелы!
 --------------------------------------
 Пакетный файл написан 24/01/2015
 Последнее исправление внесено 24/01/2015
@@ -21,12 +23,13 @@ goto start
 --------------------------------------
 
 Этот блок содержит настройки скрипта
-"Пути содержащие пробелы взять в кавычки!"
 Концевые слеши в путях не ставить!
 Не забуте установить свои данные!
 
 :start
-rem Путь к каталогу с базами 1С Бухгалтерия
+rem "Путь к каталогу с базами 1С Бухгалтерия"
+:: если в пути есть пробелы, обязательно
+:: указывать в кавычках (английская раскладка клавиатуры)
 set source="D:\1C\Base"
 rem Сколько дней хранить архивы.
 set NumberArchives=1
@@ -38,21 +41,24 @@ rem Рабочий блок
 rem Путь к каталогу для хранения резервных копий
 ::  (каталог в котором находится скрипт)
 ::  устанавливается автоматически 
-set backup="%~dp0"
+set backup=%~dp0
+rem метка наличие ошибок
+set error=0
 rem Файл логов (в каталоге со скриптом).
-set logfile=%backup%\backup.log
-rem Автоопределение пути к WinRar
-::  ошибка если не найден
-if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchiveProgram))
+set logfile=%backup%backup.log
 
-rem обработка ошибок
-rem %date% текущая дата (системная переменная) 
-rem если сегодня архив уже был создан
-if exist %backup%\%date%.rar (goto ExistBackup)
+rem обработка ошибок 
 rem если недоступен каталог с базами
 if not exist %source% (goto NoSourceDir)
 rem если недоступен каталог для архивов
 if not exist %backup% (goto NoBackupDir)
+rem если сегодня архив уже был создан
+rem %date% текущая дата (системная переменная)
+if exist %backup%%date%.rar (goto ExistBackup)
+
+rem Автоопределение пути к WinRar
+::  ошибка если не найден
+if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchiveProgram))
 
 rem архивирование
 rem аргументы командной строки для rar.exe
@@ -78,7 +84,8 @@ rem %ErrorLevel% результат выполнения архивирования
 :: возвращается rar.exe
 rem если успешно приступить к перемещению архива
 :: если ошибка записать в ее код в лог файл
-if %ErrorLevel%==0 (goto log) else (set result="Ошибка - %ErrorLevel%"
+if %ErrorLevel%==0 (set result="Архив создан успешно"
+goto log) else (set result="Ошибка - %ErrorLevel%"
 goto :error)
 
 :NoArchiveProgram
@@ -117,7 +124,7 @@ rem forfiles - для каждого файла выполнять
 :: /M *.rar - если архив rar
 :: /D -%NumberArchives% - с датой создания более …
 :: /C "cmd /c del /q @path" - удалять без подтверждения
-if exist %backup%\%date%.rar (forfiles /P %backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @path")
+if exist %backup%%date%.rar (forfiles /P %backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @path")
 
 rem на случай если скрипт запускался 
 :: другим скриптом возвращаем исходную
@@ -127,6 +134,8 @@ rem если есть важные ошибки
 :: ставим скрипт на паузу 
 if %error%==1 (color 0c
 echo %result%
-pause
-) else (chcp 866 >nul
-exit)
+pause)
+rem восстанавливаем настройки
+color 07
+chcp 866 > nul
+rem exit

@@ -1,5 +1,5 @@
 rem отключение вывода сообщений
-rem echo off
+rem @echo off
 rem установка кодовой страницы
 chcp 1251 >nul
 rem пропуск интро
