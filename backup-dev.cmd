@@ -1,5 +1,9 @@
-rem отключение вывода сообщений
 rem @echo off
+setlocal
+rem запоминаем текущую кодовую страницу
+:: на случай если она отличается от 866 
+for /f "tokens=2 delims=:" %%i in ('chcp') do (
+    set PrevCP=%%i)
 rem установка кодовой страницы
 chcp 1251 > nul
 rem пропуск интро
@@ -155,5 +159,6 @@ rem восстанавливаем настройки
 :: (на случай если скрипт запускался 
 :: другим скриптом)
 color 07
-chcp 866 > nul
+chcp %PrevCP% >nul
+endlocal
 rem exit
