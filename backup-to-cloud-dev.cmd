@@ -46,11 +46,10 @@ rem Рабочий блок
 rem Авто определение пути к WinRar
 ::  ошибка если не найден
 if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set archive="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set archive="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchive))
-rem Файл логов (в каталоге со скриптом).
-set CurrentDisk="%~dp0"
-set logfile=%CurrentDisk%\backup.log
 rem Путь к каталогу со скриптом (автоматически)
-
+set CurrentDisk="%~dp0"
+rem Файл логов (в каталоге со скриптом).
+set logfile=%CurrentDisk%\backup.log
 
 rem обработка ошибок
 rem %date% текущая дата (системная переменная) 
