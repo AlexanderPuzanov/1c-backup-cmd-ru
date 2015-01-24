@@ -122,10 +122,10 @@ rem %LogFile% путь к файлу логов
 rem %NumberStringsLog% максимальное количество строк
 ::  в файле логов
 rem "ћаги€" http://www.cyberforum.ru/cmd-bat/thread1299615.html
-set "logging = echo %date% %time% %result% >> "%LogFile%""
+set "logging=echo %date% %time% %result% >> "%LogFile%""
 if exist "%LogFile%" (
  for /f %%i in ('"<"%LogFile%" find /c /v """') do (
-  if %%i lss %NumberStringsLog%(
+  if %%i lss %NumberStringsLog% (
    %logging%
   ) else (
    <"%LogFile%" more +1>.tmp
@@ -136,7 +136,7 @@ if exist "%LogFile%" (
   )
 ) else (
  %logging%
-)
+ )
 
 rem удаление старых архивов
 rem если текущего архива очистку не проводить
