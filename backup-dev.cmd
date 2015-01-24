@@ -35,6 +35,8 @@ rem Сколько дней хранить архивы.
 set NumberArchives=10
 rem Пароль для архивов
 set password=123
+rem Максимальное количество строк в файле логов
+set NumberStringsLog=90
 
 rem Рабочий блок
 
@@ -45,7 +47,7 @@ set backup=%~dp0
 rem метка наличие ошибок
 set error=0
 rem Файл логов (в каталоге со скриптом).
-set logfile=%backup%backup.log
+set LogFile=%backup%backup.log
 
 rem обработка ошибок 
 rem если недоступен каталог с базами
@@ -108,10 +110,29 @@ goto log
 set error=1
 
 :log
-rem запись логов.
+rem запись логов и очистка старых записей
 rem %date% текущая дата (системная переменная)
 rem %time% текущие время (системная переменная)
-echo %date% %time% %result% >> %logfile%
+rem %result% результат архивирования
+rem %LogFile% путь к файлу логов
+rem %NumberStringsLog% максимальное количество строк
+::  в файле логов
+rem "Магия" http://www.cyberforum.ru/cmd-bat/thread1299615.html
+set "logging = echo %date% %time% %result% >> "%LogFile%""
+if exist "%LogFile%" (
+ for /f %%i in ('"<"%LogFile%" find /c /v """') do (
+  if %%i lss %NumberStringsLog%(
+   %logging%
+  ) else (
+   <"%LogFile%" more +1>.tmp
+   >"%LogFile%" type .tmp
+   del .tmp
+   %logging%
+   )
+  )
+) else (
+ %logging%
+)
 
 rem удаление старых архивов
 rem если текущего архива очистку не проводить
@@ -123,16 +144,16 @@ rem forfiles - для каждого файла выполнять
 :: /C "cmd /c del /q @path" - удалять без подтверждения
 if exist %backup%%date%.rar (forfiles /P %backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @path")
 
-rem на случай если скрипт запускался 
-:: другим скриптом возвращаем исходную
-:: кодовою страницу
 rem если есть важные ошибки
 :: меняем цвет текста на красный
 :: ставим скрипт на паузу 
 if %error%==1 (color 0c
 echo %result%
 pause)
+color 07
 rem восстанавливаем настройки
+:: (на случай если скрипт запускался 
+:: другим скриптом)
 color 07
 chcp 866 > nul
 rem exit
