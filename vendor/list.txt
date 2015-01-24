@@ -1,0 +1,7 @@
+Blat
+Windows Command Line SMTP Mailer
+http://sourceforge.net/projects/blat/
+
+stunnel
+The stunnel program is designed to work as an SSL encryption wrapper between remote client and local (inetd-startable) or remote server.
+https://www.stunnel.org/index.html
