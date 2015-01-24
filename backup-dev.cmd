@@ -111,10 +111,7 @@ set error=1
 rem запись логов.
 rem %date% текущая дата (системная переменная)
 rem %time% текущие время (системная переменная)
-echo %date% >> %logfile%
-echo %time% >> %logfile%
-echo %result% >> %logfile%
-echo ... >> %logfile%
+echo %date% %time% %result% >> %logfile%
 
 rem удаление старых архивов
 rem если текущего архива очистку не проводить
