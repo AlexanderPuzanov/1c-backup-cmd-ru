@@ -1,7 +1,14 @@
 Blat
-Windows Command Line SMTP Mailer
+Программа для отправки почты 
+по протоколу SMTP из командной строки 
+MS Windows
+Версия 5.10 от 22 января 2015 г.
 http://sourceforge.net/projects/blat/
 
 stunnel
-The stunnel program is designed to work as an SSL encryption wrapper between remote client and local (inetd-startable) or remote server.
+Программа stunnel предназначен 
+для работы в качестве обертки шифрования SSL 
+между удаленным клиентом и локальным 
+или удаленным сервером.
+Версия 3.23 от 25 октября 2014 г.
 https://www.stunnel.org/index.html
