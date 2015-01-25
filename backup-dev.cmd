@@ -7,7 +7,7 @@ for /f "tokens=2 delims=:" %%i in ('chcp') do (
 rem установка кодовой страницы
 chcp 1251 > nul
 rem пропуск интро
-goto start
+goto Start
 --------------------------------------
 Этот пакетный файл предназначен
 для автоматизации архивирования баз
@@ -30,15 +30,15 @@ goto start
 Концевые слеши в путях не ставить!
 Не забуте установить свои данные!
 
-:start
+:Start
 rem "Путь к каталогу с базами 1С Бухгалтерия"
 :: если в пути есть пробелы, обязательно
 :: указывать в кавычках (английская раскладка клавиатуры)
-set source="D:\1C\Base"
+set Source="D:\1C\Base"
 rem Сколько дней хранить архивы.
 set NumberArchives=10
 rem Пароль для архивов
-set password=123
+set Password=123
 rem Максимальное количество строк в файле логов
 set NumberStringsLog=90
 
@@ -48,20 +48,20 @@ rem Путь к каталогу для хранения резервных копий
 ::  (каталог в котором находится скрипт)
 ::  устанавливается автоматически
 rem Внимание!!! В адресе не должно быть пробелов!!!
-set backup=%~dp0
+set Backup=%~dp0
 rem метка наличие ошибок
-set error=0
+set Error=0
 rem Файл логов (в каталоге со скриптом).
-set LogFile=%backup%backup.log
+set LogFile=%Backup%backup.log
 
 rem обработка ошибок 
 rem если недоступен каталог с базами
-if not exist %source% (goto NoSourceDir)
+if not exist %Source% (goto NoSourceDir)
 rem если недоступен каталог для архивов
-if not exist %backup% (goto NoBackupDir)
+if not exist %Backup% (goto NoBackupDir)
 rem если сегодня архив уже был создан
-rem %date% текущая дата (системная переменная)
-if exist %backup%%date%.rar (goto ExistBackup)
+rem %DATE% текущая дата (системная переменная)
+if exist %Backup%%DATE%.rar (goto ExistBackup)
 
 rem Автоопределение пути к WinRar
 ::  ошибка если не найден
@@ -84,7 +84,7 @@ rem аргументы командной строки для rar.exe
 :: -hp    - зашифровать архив включая имена файлов
 :: -k     - заблокировать архив (защита от изменений)
 :: --     - больше нет аргументов
-%ArchiveProgram% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp%password% -k %backup% %source% --
+%ArchiveProgram% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp%Password% -k %Backup% %Source% --
 
 rem результат архивирования
 rem %ErrorLevel% результат выполнения архивирования
@@ -92,68 +92,68 @@ rem %ErrorLevel% результат выполнения архивирования
 rem если успешно приступить к перемещению архива
 :: если ошибка записать в ее код в лог файл
 if %ErrorLevel%==0 (set result="Архив создан успешно"
-goto log) else (set result="Ошибка - %ErrorLevel%"
-goto :error)
+goto Log) else (set result="Ошибка - %ErrorLevel%"
+goto Error)
 
 :NoArchiveProgram
-set result="Программа архиватор не доступна"
-goto :error
+set Result="Программа архиватор не доступна"
+goto Error
 
 :NoSourceDir
-set result="Каталог с базами не доступен"
-goto :error
+set Result="Каталог с базами не доступен"
+goto Error
 
 :NoBackupDir
-set result="Каталог для архивирования не доступен"
-goto :error
+set Result="Каталог для архивирования не доступен"
+goto Error
 
 :ExistBackup
-set result="Архив сегодня уже был создан"
-goto log
+set Result="Архив сегодня уже был создан"
+goto Log
 
-:error
-set error=1
+:Error
+set Error=1
 
-:log
+:Log
 rem запись логов и очистка старых записей
-rem %date% текущая дата (системная переменная)
-rem %time% текущие время (системная переменная)
-rem %result% результат архивирования
+rem %DATE% текущая дата (системная переменная)
+rem %TIME% текущие время (системная переменная)
+rem %Result% результат архивирования
 rem %LogFile% путь к файлу логов
 rem %NumberStringsLog% максимальное количество строк
 ::  в файле логов
 rem "Магия" http://www.cyberforum.ru/cmd-bat/thread1299615.html
-set "logging=echo %date% %time% %result% >> "%LogFile%""
+set "Logging=echo %DATE% %TIME% %Result% >> "%LogFile%""
 if exist "%LogFile%" (
  for /f %%i in ('"<"%LogFile%" find /c /v """') do (
   if %%i lss %NumberStringsLog% (
-   %logging%
+   %Logging%
   ) else (
    <"%LogFile%" more +1>.tmp
    >"%LogFile%" type .tmp
    del .tmp
-   %logging%
+   %Logging%
    )
   )
 ) else (
- %logging%
+ %Logging%
  )
 
 rem удаление старых архивов
 rem если текущего архива очистку не проводить
 :: защита от удаления последнего архива
 rem forfiles - для каждого файла выполнять
-:: /P %backup% - в каталоге для синхронизации с облаком
+:: /P %Backup% - в каталоге для синхронизации с облаком
 :: /M *.rar - если архив rar
 :: /D -%NumberArchives% - с датой создания более …
 :: /C "cmd /c del /q @path" - удалять без подтверждения
-if exist %backup%%date%.rar (forfiles /P %backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @path")
+if exist %Backup%%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @PATH")
 
 rem если есть важные ошибки
 :: меняем цвет текста на красный
 :: ставим скрипт на паузу 
-if %error%==1 (color 0c
-echo %result%
+if %Error%==1 (color 0c
+echo %Result%
 pause)
 rem восстанавливаем настройки
 :: (на случай если скрипт запускался 
