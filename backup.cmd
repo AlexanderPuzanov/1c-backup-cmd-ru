@@ -26,7 +26,7 @@ goto Start
 
 Этот блок содержит настройки скрипта
 Концевые слеши в путях не ставить!
-Не забуте установить свои данные!
+Не забудьте установить свои данные!
 
 :Start
 rem "Путь к каталогу с базами 1С Бухгалтерия"
@@ -39,10 +39,6 @@ rem Пароль для архивов
 set Password=123
 rem Максимальное количество строк в файле логов
 set NumberStringsLog=90
-rem Путь к каталогу для хранения резервных копий
-::  (каталог в котором находится скрипт)
-::  устанавливается автоматически
-rem Внимание!!! В адресе не должно быть пробелов!!!
 
 rem Рабочий блок
 
@@ -52,9 +48,8 @@ set LogFile=%Backup%backup.log
 
 if not exist %Source% (goto NoSourceDir)
 if not exist %Backup% (goto NoBackupDir)
-if exist %Backup%%DATE%.rar (goto ExistBackup)
-
 if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchiveProgram))
+if exist %Backup%%DATE%.rar (goto ExistBackup)
 
 %ArchiveProgram% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp%Password% -k %Backup% %Source% --
 

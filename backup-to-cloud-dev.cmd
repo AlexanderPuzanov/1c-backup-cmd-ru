@@ -33,7 +33,7 @@ https://disk.yandex.ru/download/YandexDiskSetup.exe
 
 Этот блок содержит настройки скрипта
 Концевые слеши в путях не ставить!
-Не забуте установить свои данные!
+Не забудьте установить свои данные!
 
 :Start
 rem "Путь к каталогу с базами 1С Бухгалтерия"
@@ -59,18 +59,18 @@ set Error=0
 rem Файл логов (в каталоге со скриптом).
 set LogFile=%PathScript%backup.log
 
-rem обработка ошибок 
+rem проверки 
 rem если недоступен каталог с базами
 if not exist %Source% (goto NoSourceDir)
 rem если недоступен каталог для архивов
 if not exist %Backup% (goto NoBackupDir)
+rem Автоопределение пути к WinRar
+::  ошибка если не найден
+if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchiveProgram))
 rem если сегодня архив уже был создан
 rem %DATE% текущая дата (системная переменная)
 if exist %Backup%\%DATE%.rar (goto ExistBackup)
 
-rem Автоопределение пути к WinRar
-::  ошибка если не найден
-if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchiveProgram))
 
 rem архивирование
 rem аргументы командной строки для rar.exe
