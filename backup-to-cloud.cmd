@@ -1,6 +1,9 @@
-echo off
-chcp 1251 >nul
-goto start
+@echo off
+setlocal
+for /f "tokens=2 delims=:" %%i in ('chcp') do (
+    set PrevCP=%%i)
+chcp 1251 > nul
+goto Start
 --------------------------------------
 Этот пакетный файл предназначен
 для автоматизации архивирования баз
@@ -20,62 +23,98 @@ https://disk.yandex.ru/download/YandexDiskSetup.exe
 временных файлов в процессе работы.
 --------------------------------------
 Пакетный файл написан 19/01/2015
-Последнее исправление внесено 23/01/2015
+Последнее исправление внесено 26/01/2015
 Автор Александр Пузанов
 --------------------------------------
 
 Этот блок содержит настройки скрипта
-"Пути содержащие пробелы взять в кавычки!"
 Концевые слеши в путях не ставить!
-Не забуте установить свои данные!
-:start
-rem Путь к базам 1С Бухгалтерия
-set source=D:\1C\Base
+Не забудьте установить свои данные!
+
+:Start
+rem "Путь к каталогу с базами 1С Бухгалтерия"
+:: если в пути есть пробелы, обязательно
+:: указывать в кавычках (английская раскладка клавиатуры)
+set Source="D:\1C\Base"
 rem Путь к месту к папке синхронизации с облаком
-set backup=E:\backup-1C
+rem Внимание!!! В адресе не должно быть пробелов!!!
+set Backup=E:\YandexDisk\backup-1C
 rem Сколько дней хранить архивы.
-set NumberArchives=10
+set NumberArchives=1
 rem Пароль для архивов
-set password=123
+set Password=123
+rem Максимальное количество строк в файле логов
+set NumberStringsLog=2
 
 rem Рабочий блок
-if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set archive="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set archive="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchive))
-set CurrentDisk="%~dp0"
-set logfile=%CurrentDisk%\backup.log
-if exist %backup%\%date%.rar (goto ExistBackup)
-if not exist %source% (goto NoSourceDir)
-if not exist %backup% (goto NoBackupDir)
-%archive% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp%password% -k %CurrentDisk% %source% --
-if %ErrorLevel%==0 (goto move) else (set result="Ошибка - %ErrorLevel%")
-goto log
-:move
-move %CurrentDisk%\%date%.rar %backup%
-if exist %backup%\%date%.rar (set result="Задание выполнено успешно") else (set result="Ошибка копирования файла"
-goto :error)
-goto log
-:NoArchive
-set result="Программа архиватор не доступна"
-goto :error
+
+set PathScript="%~dp0"
+set Error=0
+set LogFile=%PathScript%backup.log
+
+if not exist %Source% (goto NoSourceDir)
+if not exist %Backup% (goto NoBackupDir)
+if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchiveProgram))
+if exist %Backup%\%DATE%.rar (goto ExistBackup)
+
+%ArchiveProgram% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp%Password% -k %PathScript% %Source% --
+
+if %ErrorLevel%==0 (set Result="Архив создан успешно"
+goto MoveArchive) else (set Result="Ошибка - %ErrorLevel%"
+goto Error)
+
+:MoveArchive
+move %PathScript%%DATE%.rar %Backup%
+if exist %Backup%\%DATE%.rar (set Result="Задание выполнено успешно") else (set Result="Ошибка копирования файла"
+goto Error)
+goto Log
+
+:NoArchiveProgram
+set Result="Программа архиватор не доступна"
+goto Error
+
 :NoSourceDir
-set result="Каталог с базами не доступен"
-goto :error
+set Result="Каталог с базами не доступен"
+goto Error
+
 :NoBackupDir
-set result="Каталог для архивирования не доступен"
-goto :error
+set Result="Каталог для архивирования не доступен"
+goto Error
 
 :ExistBackup
-set result="Архив был создан ранее"
-goto log
-:log
-echo %date% >> %logfile%
-echo %time% >> %logfile%
-echo %result% >> %logfile%
-echo ... >> %logfile%
-move %logfile% %backup%\backup.log /Y
-if exist %CurrentDisk%\%date%.rar (del %CurrentDisk%\%date%.rar /Q)
-if exist %backup%\%date%.rar (forfiles /P %backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @path")
-if %error%==1 (color 0c
-echo %result%
-pause
-) else (chcp 866 >nul
-exit)
+set Result="Архив сегодня уже был создан"
+goto Log
+
+:Error
+set Error=1
+
+:Log
+rem "Магия" http://www.cyberforum.ru/cmd-bat/thread1299615.html
+set "Logging=echo %DATE% %TIME% %Result% >> "%LogFile%""
+if exist "%LogFile%" (
+ for /f %%i in ('"<"%LogFile%" find /c /v """') do (
+  if %%i lss %NumberStringsLog% (
+   %Logging%
+  ) else (
+   <"%LogFile%" more +1>.tmp
+   >"%LogFile%" type .tmp
+   del .tmp
+   %Logging%
+   )
+  )
+) else (
+ %Logging%
+ )
+
+copy /y %LogFile% %Backup%
+
+if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @PATH")
+ 
+if %Error%==1 (color 0c
+echo %Result%
+pause)
+
+color 07
+chcp %PrevCP% >nul
+endlocal
+exit
