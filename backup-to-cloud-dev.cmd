@@ -70,7 +70,7 @@ rem если недоступен каталог для архивов
 if not exist %Backup% (goto NoBackupDir)
 rem если сегодня архив уже был создан
 rem %DATE% текущая дата (системная переменная)
-if exist %Backup%%DATE%.rar (goto ExistBackup)
+if exist %Backup%\%DATE%.rar (goto ExistBackup)
 
 rem Автоопределение пути к WinRar
 ::  ошибка если не найден
@@ -173,7 +173,7 @@ rem forfiles - для каждого файла выполнять
 :: /M *.rar - если архив rar
 :: /D -%NumberArchives% - с датой создания более …
 :: /C "cmd /c del /q @PATH" - удалять без подтверждения
-if exist %Backup%%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @PATH")
+if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @PATH")
 
 rem если есть важные ошибки
 :: меняем цвет текста на красный
