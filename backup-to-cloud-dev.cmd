@@ -59,10 +59,6 @@ set Error=0
 rem Файл логов (в каталоге со скриптом).
 set LogFile=%PathScript%backup.log
 
-rem Авто определение пути к WinRar
-::  ошибка если не найден
-if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set archive="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set archive="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchive))
-
 rem обработка ошибок 
 rem если недоступен каталог с базами
 if not exist %Source% (goto NoSourceDir)
@@ -108,7 +104,7 @@ goto Error)
 rem перемещение архива в папку для хранения
 rem %DATE% текущая дата (системная переменная)
 rem переместить архив в папку синхронизации с облаком
-move %PathScript%\%DATE%.rar %Backup%
+move %PathScript%%DATE%.rar %Backup%
 rem проверить результат перемещения и записать в лог файл
 if exist %Backup%\%DATE%.rar (set Result="Задание выполнено успешно") else (set Result="Ошибка копирования файла"
 goto Error)
