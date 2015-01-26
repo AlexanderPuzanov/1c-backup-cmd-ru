@@ -183,4 +183,4 @@ rem восстанавливаем настройки
 color 07
 chcp %PrevCP% >nul
 endlocal
-rem exit
+rem exit /b

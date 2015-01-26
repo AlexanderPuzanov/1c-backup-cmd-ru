@@ -117,4 +117,4 @@ pause)
 color 07
 chcp %PrevCP% >nul
 endlocal
-exit
+exit /b
