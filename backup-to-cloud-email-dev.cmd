@@ -38,8 +38,8 @@ https://disk.yandex.ru/download/YandexDiskSetup.exe
 
 :Start
 rem "Путь к каталогу с базами 1С Бухгалтерия"
-:: если в пути есть пробелы, обязательно
-:: указывать в кавычках (английская раскладка клавиатуры)
+::   если в пути есть пробелы, обязательно
+::   указывать в кавычках (английская раскладка клавиатуры)
 set Source="D:\1C\Base"
 rem За сколько дней хранить архивы
 set NumberArchives=1
@@ -50,8 +50,21 @@ set NumberStringsLog=2
 rem Путь к каталогу синхронизации с облаком.
 rem Внимание!!! В пути не должно быть пробелов!!!
 set Backup=E:\YandexDisk\backup-1C
+rem Путь к программе blat.exe
+set EmailProgram=D:\blat\blat.exe
+rem Данные отправителя
+::  с этой почты будет отправляться
+::  уведомления о ошибках
+rem Логин (часть email до @yandex.ru)
+set EmailFromName=login
+set EmailFromPassword=password
 
 rem Рабочий блок
+
+rem Данные отправителя
+set EmailFromServer=ssl://smtp.yandex.ru
+set EmailFromPort=25
+set EmailFromLogin=%EmailFromName%@yandex.ru
 
 rem Путь к каталогу со скриптом (автоматически)
 set PathScript="%~dp0"
