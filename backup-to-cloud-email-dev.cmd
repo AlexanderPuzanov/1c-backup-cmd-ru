@@ -53,12 +53,19 @@ set Backup=E:\YandexDisk\backup-1C
 rem Путь к программе blat.exe
 set EmailProgram=D:\blat\blat.exe
 rem Данные отправителя
-::  с этой почты будет отправляться
+::  с этой почты будут отправляться
 ::  уведомления о ошибках
 rem логин (часть email до @yandex.ru)
 set EmailFromName=login
 rem пароль
 set EmailFromPassword=password
+rem Данные получателя
+::  на эту почту будут отправляться
+::  уведомления о ошибках
+set EmailTo=sysadmin@yandex.ru
+rem Тема сообщения
+::  %computername% — имя компьютера
+set EmailToSubject="Уведомление с сервера %computername%"
 
 rem Рабочий блок
 
