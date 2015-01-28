@@ -20,3 +20,11 @@ CMail
 с поддержкой шифрования SSL.
 Версия 0.7.4 от 10 ноября 2014 г.
 http://inveigle.net/cmail_download.shtml
+
+
+mailsend
+Программа для отправки почты 
+по протоколу SMTP из командной строки
+с поддержкой шифрования SSL.
+Версия v1.17b15 от 17 августа 2014 г.
+https://github.com/muquit/mailsend/tree/master/bins
