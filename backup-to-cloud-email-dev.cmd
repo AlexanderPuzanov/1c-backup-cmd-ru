@@ -55,15 +55,19 @@ set EmailProgram=D:\blat\blat.exe
 rem Данные отправителя
 ::  с этой почты будет отправляться
 ::  уведомления о ошибках
-rem Логин (часть email до @yandex.ru)
+rem логин (часть email до @yandex.ru)
 set EmailFromName=login
+rem пароль
 set EmailFromPassword=password
 
 rem Рабочий блок
 
 rem Данные отправителя
+rem smtp сервер
 set EmailFromServer=ssl://smtp.yandex.ru
+rem порт сервера
 set EmailFromPort=25
+rem полный логин на сервере
 set EmailFromLogin=%EmailFromName%@yandex.ru
 
 rem Путь к каталогу со скриптом (автоматически)
