@@ -55,8 +55,8 @@ set Email_Sender_Program=D:\mailsend\mailsend.exe
 rem Данные отправителя
 ::  с этой почты будут отправляться
 ::  уведомления о ошибках
-rem логин (часть email до @yandex.ru)
-set Email_Login=My_Login
+rem  email отправителя
+set Email_Sender=backup@yandex.ru
 rem пароль
 set Email_Password=My_Password
 rem Данные получателя
@@ -71,8 +71,10 @@ rem Данные отправителя
 set SMTP_Server=smtp.yandex.ru
 ::  порт сервера
 set SMTP_Port=465
-::  email отправителя
-set Email_Sender=%Email_Login%@yandex.ru
+rem логин получаем логин (часть email до @yandex.ru)
+::  Взять из вывода команды ('echo %Email_Sender%')
+::  первый элемент (tokens=1). Разделитель (delims=@).
+for /f "tokens=1 delims=@" %%i in ('echo %Email_Sender%') do (set Email_Login=%%i)
 ::  имя отправителя (имя сервера)
 set Sender_Name="Сервер — %computername%"
 
