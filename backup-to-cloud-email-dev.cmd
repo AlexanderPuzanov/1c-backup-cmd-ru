@@ -211,6 +211,7 @@ rem -cs        - кодировка текста
 rem -mime-type - тип вложения
 rem +cc +bc    - не отправлять копии
 rem -q         - "бесшумная" работа
+set Email_Send=^
 %Email_Sender_Program% ^
  -smtp %SMTP_Server% ^
  -port %SMTP_Port% ^
@@ -223,16 +224,17 @@ rem -q         - "бесшумная" работа
  -t %Email_To% ^
  -f "%Email_Sender%" ^
  -name "%Sender_Name%" ^
- -sub "заголовок" ^
- -M "текст письма" ^
+ -sub "%Email_To_Subject%" ^
+ -M "%Email_To_Text%" ^
  -enc-type "7bit" ^
  -cs "Windows-1251" ^
  -mime-type "text/plain" ^
  +cc +bc -q
 
-rem ???
-if %Error%==1 (
-goto MoveArchive)
+rem Отправка email с уведомлением о ошибке
+if %Error%==1 (Email_To_Subject="Ошибка архивирования"
+Email_To_Text="%Result%"
+%Email_Send%)
 
 rem если есть важные ошибки
 :: меняем цвет текста на красный
