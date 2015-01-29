@@ -72,7 +72,7 @@ set SMTP_Server=smtp.yandex.ru
 ::  порт сервера
 set SMTP_Port=465
 ::  email отправителя
-set Email_Sender=%EmailFromName%@yandex.ru
+set Email_Sender=%Email_Login%@yandex.ru
 ::  имя отправителя (имя сервера)
 set Sender_Name="Сервер — %computername%"
 
