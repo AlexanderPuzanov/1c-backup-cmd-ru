@@ -194,6 +194,46 @@ rem forfiles - для каждого файла выполнять
 :: /C "cmd /c del /q @PATH" - удалять без подтверждения
 if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @PATH")
 
+rem блок отправки емайл
+rem -smtp  - сервер
+rem -port  - порт
+rem -ssl   - шифрование ssl
+rem -auth-login  - авторизация по логину
+rem -user  - логин (email до символа @)
+rem -pass  - пароль емайл
+rem -t     - email отправителя
+rem -f     - email получателя
+rem -name  - имя отправителя
+rem -sub   - заголовок письма
+rem -M     - текст письма
+rem -enc-type  - тип кодирования
+rem -cs        - кодировка текста
+rem -mime-type - тип вложения
+rem +cc +bc    - не отправлять копии
+rem -q         - "бесшумная" работа
+%Email_Sender_Program% ^
+ -smtp %SMTP_Server% ^
+ -port %SMTP_Port% ^
+ -ssl ^
+ -auth-login ^
+ -user %Email_Login% ^
+ -pass %Email_Password% ^ 
+ -auth-login -user %Email_Login% ^
+ -pass %Email_Password% ^
+ -t %Email_To% ^
+ -f "%Email_Sender%" ^
+ -name "%Sender_Name%" ^
+ -sub "заголовок" ^
+ -M "текст письма" ^
+ -enc-type "7bit" ^
+ -cs "Windows-1251" ^
+ -mime-type "text/plain" ^
+ +cc +bc -q
+
+rem ???
+if %Error%==1 (
+goto MoveArchive)
+
 rem если есть важные ошибки
 :: меняем цвет текста на красный
 :: ставим скрипт на паузу 
