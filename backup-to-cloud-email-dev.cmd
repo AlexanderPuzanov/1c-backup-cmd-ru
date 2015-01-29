@@ -50,32 +50,31 @@ set NumberStringsLog=2
 rem Путь к каталогу синхронизации с облаком.
 rem Внимание!!! В пути не должно быть пробелов!!!
 set Backup=E:\YandexDisk\backup-1C
-rem Путь к программе blat.exe
-set EmailProgram=D:\blat\blat.exe
+rem Путь к программе mailsend.exe
+set Email_Sender_Program=D:\mailsend\mailsend.exe
 rem Данные отправителя
 ::  с этой почты будут отправляться
 ::  уведомления о ошибках
 rem логин (часть email до @yandex.ru)
-set EmailFromName=login
+set Email_Login=My_Login
 rem пароль
-set EmailFromPassword=password
+set Email_Password=My_Password
 rem Данные получателя
 ::  на эту почту будут отправляться
 ::  уведомления о ошибках
-set EmailTo=sysadmin@yandex.ru
-rem Тема сообщения
-::  %computername% — имя компьютера
-set EmailToSubject="Уведомление с сервера %computername%"
+set Email_To=sysadmin@yandex.ru
 
 rem Рабочий блок
 
 rem Данные отправителя
-rem smtp сервер
-set EmailFromServer=ssl://smtp.yandex.ru
-rem порт сервера
-set EmailFromPort=25
-rem полный логин на сервере
-set EmailFromLogin=%EmailFromName%@yandex.ru
+::  smtp сервер
+set SMTP_Server=smtp.yandex.ru
+::  порт сервера
+set SMTP_Port=465
+::  email отправителя
+set Email_Sender=%EmailFromName%@yandex.ru
+::  имя отправителя (имя сервера)
+set Sender_Name="Сервер — %computername%"
 
 rem Путь к каталогу со скриптом (автоматически)
 set PathScript="%~dp0"
