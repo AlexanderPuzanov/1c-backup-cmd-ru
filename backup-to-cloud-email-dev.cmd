@@ -211,9 +211,6 @@ rem -M     - текст письма
 rem -enc-type  - тип кодирования
 rem -cs        - кодировка текста
 rem -mime-type - тип вложения
-rem +cc +bc    - не отправлять копии
-rem -q         - "бесшумная" работа
-set Email_Send=^
 %Email_Sender_Program%^
  -smtp %SMTP_Server%^
  -port %SMTP_Port%^
@@ -227,14 +224,8 @@ set Email_Send=^
  -sub %Email_To_Subject%^
  -cs "Windows-1251"^
  -enc-type "7bit"^ 
- -M %Email_To_Text%^
- -mime-type "text/plain"^
- +cc +bc -q
+ -M %Email_To_Text%
 
-rem Отправка email с уведомлением о ошибке
-if %Error%==1 (Email_To_Subject="Ошибка архивирования"
-Email_To_Text=%Result%
-%Email_Send%)
 
 rem если есть важные ошибки
 :: меняем цвет текста на красный
