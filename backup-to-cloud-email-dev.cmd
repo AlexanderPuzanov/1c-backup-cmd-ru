@@ -214,21 +214,21 @@ rem -mime-type - тип вложения
 rem +cc +bc    - не отправлять копии
 rem -q         - "бесшумная" работа
 set Email_Send=^
-%Email_Sender_Program% ^
- -smtp %SMTP_Server% ^
- -port %SMTP_Port% ^
- -ssl ^
- -auth-login ^
- -user %Email_Login% ^
- -pass %Email_Password% ^
- -t %Email_To% ^
- -f %Email_Sender% ^
- -name %Sender_Name% ^
- -sub %Email_To_Subject% ^
- -M %Email_To_Text% ^
- -enc-type "7bit" ^
- -cs "Windows-1251" ^
- -mime-type "text/plain" ^
+%Email_Sender_Program%^
+ -smtp %SMTP_Server%^
+ -port %SMTP_Port%^
+ -ssl^
+ -auth-login^
+ -user %Email_Login%^
+ -pass %Email_Password%^
+ -t %Email_To%^
+ -f %Email_Sender%^
+ -name %Sender_Name%^
+ -sub %Email_To_Subject%^
+ -cs "Windows-1251"^
+ -enc-type "7bit"^ 
+ -M %Email_To_Text%^
+ -mime-type "text/plain"^
  +cc +bc -q
 
 rem Отправка email с уведомлением о ошибке
