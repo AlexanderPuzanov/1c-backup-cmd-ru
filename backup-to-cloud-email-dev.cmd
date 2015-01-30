@@ -220,8 +220,6 @@ set Email_Send=^
  -ssl ^
  -auth-login ^
  -user %Email_Login% ^
- -pass %Email_Password% ^ 
- -auth-login -user %Email_Login% ^
  -pass %Email_Password% ^
  -t %Email_To% ^
  -f "%Email_Sender%" ^
