@@ -222,10 +222,10 @@ set Email_Send=^
  -user %Email_Login% ^
  -pass %Email_Password% ^
  -t %Email_To% ^
- -f "%Email_Sender%" ^
- -name "%Sender_Name%" ^
- -sub "%Email_To_Subject%" ^
- -M "%Email_To_Text%" ^
+ -f %Email_Sender% ^
+ -name %Sender_Name% ^
+ -sub %Email_To_Subject% ^
+ -M %Email_To_Text% ^
  -enc-type "7bit" ^
  -cs "Windows-1251" ^
  -mime-type "text/plain" ^
@@ -233,7 +233,7 @@ set Email_Send=^
 
 rem Отправка email с уведомлением о ошибке
 if %Error%==1 (Email_To_Subject="Ошибка архивирования"
-Email_To_Text="%Result%"
+Email_To_Text=%Result%
 %Email_Send%)
 
 rem если есть важные ошибки
