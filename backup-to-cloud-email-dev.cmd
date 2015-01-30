@@ -3,7 +3,7 @@ setlocal
 rem запоминаем текущую кодовую страницу
 :: на случай если она отличается от 866 
 for /f "tokens=2 delims=:" %%i in ('chcp') do (
-    set PrevCP=%%i)
+    set Prev_CP=%%i)
 rem установка кодовой страницы
 chcp 1251 > nul
 rem пропуск интро
@@ -42,11 +42,11 @@ rem "Путь к каталогу с базами 1С Бухгалтерия"
 ::   указывать в кавычках (английская раскладка клавиатуры)
 set Source="D:\1C\Base"
 rem За сколько дней хранить архивы
-set NumberArchives=1
+set Number_Archives=1
 rem Пароль для архивов
 set Password=123
 rem Максимальное количество строк в файле логов
-set NumberStringsLog=2
+set Number_Strings_Log=2
 rem Путь к каталогу синхронизации с облаком.
 rem Внимание!!! В пути не должно быть пробелов!!!
 set Backup=E:\YandexDisk\backup-1C
@@ -79,23 +79,23 @@ for /f "tokens=1 delims=@" %%i in ('echo %Email_Sender%') do (set Email_Login=%%
 set Sender_Name="Сервер — %computername%"
 
 rem Путь к каталогу со скриптом (автоматически)
-set PathScript="%~dp0"
+set Path_Script="%~dp0"
 rem метка наличие ошибок
 set Error=0
 rem Файл логов (в каталоге со скриптом).
-set LogFile=%PathScript%backup.log
+set Log_File=%Path_Script%backup.log
 
 rem проверки 
 rem если недоступен каталог с базами
-if not exist %Source% (goto NoSourceDir)
+if not exist %Source% (goto No_SourceDir)
 rem если недоступен каталог для архивов
-if not exist %Backup% (goto NoBackupDir)
+if not exist %Backup% (goto No_BackupDir)
 rem Автоопределение пути к WinRar
 ::  ошибка если не найден
-if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchiveProgram))
+if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set Archive_Program="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set Archive_Program="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto No_Archive_Program))
 rem если сегодня архив уже был создан
 rem %DATE% текущая дата (системная переменная)
-if exist %Backup%\%DATE%.rar (goto ExistBackup)
+if exist %Backup%\%DATE%.rar (goto Exist_Backup)
 
 rem архивирование
 rem аргументы командной строки для rar.exe
@@ -114,7 +114,7 @@ rem аргументы командной строки для rar.exe
 :: -hp    - зашифровать архив включая имена файлов
 :: -k     - заблокировать архив (защита от изменений)
 :: --     - больше нет аргументов
-%ArchiveProgram% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp%Password% -k %PathScript% %Source% --
+%Archive_Program% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp%Password% -k %Path_Script% %Source% --
 
 rem результат архивирования
 rem %ErrorLevel% результат выполнения архивирования
@@ -122,32 +122,32 @@ rem %ErrorLevel% результат выполнения архивирования
 rem если успешно приступить к перемещению архива
 :: если ошибка записать в ее код в лог файл
 if %ErrorLevel%==0 (set Result="Архив создан успешно"
-goto MoveArchive) else (set Result="Ошибка - %ErrorLevel%"
+goto Move_Archive) else (set Result="Ошибка - %ErrorLevel%"
 goto Error)
 
-:MoveArchive
+:Move_Archive
 rem перемещение архива в папку для хранения
 rem %DATE% текущая дата (системная переменная)
 rem переместить архив в папку синхронизации с облаком
-move %PathScript%%DATE%.rar %Backup%
+move %Path_Script%%DATE%.rar %Backup%
 rem проверить результат перемещения и записать в лог файл
 if exist %Backup%\%DATE%.rar (set Result="Задание выполнено успешно") else (set Result="Ошибка копирования файла"
 goto Error)
 goto Log
 
-:NoArchiveProgram
+:No_Archive_Program
 set Result="Программа архиватор не доступна"
 goto Error
 
-:NoSourceDir
+:No_Source_Dir
 set Result="Каталог с базами не доступен"
 goto Error
 
-:NoBackupDir
+:No_Backup_Dir
 set Result="Каталог для архивирования не доступен"
 goto Error
 
-:ExistBackup
+:Exist_Backup
 set Result="Архив сегодня уже был создан"
 goto Log
 
@@ -159,18 +159,18 @@ rem запись логов и очистка старых записей
 rem %DATE% текущая дата (системная переменная)
 rem %TIME% текущие время (системная переменная)
 rem %Result% результат архивирования
-rem %LogFile% путь к файлу логов
-rem %NumberStringsLog% максимальное количество строк
+rem %Log_File% путь к файлу логов
+rem %Number_Strings_Log% максимальное количество строк
 ::  в файле логов
 rem "Магия" http://www.cyberforum.ru/cmd-bat/thread1299615.html
-set "Logging=echo %DATE% %TIME% %Result% >> "%LogFile%""
-if exist "%LogFile%" (
- for /f %%i in ('"<"%LogFile%" find /c /v """') do (
-  if %%i lss %NumberStringsLog% (
+set "Logging=echo %DATE% %TIME% %Result% >> "%Log_File%""
+if exist "%Log_File%" (
+ for /f %%i in ('"<"%Log_File%" find /c /v """') do (
+  if %%i lss %Number_Strings_Log% (
    %Logging%
   ) else (
-   <"%LogFile%" more +1>.tmp
-   >"%LogFile%" type .tmp
+   <"%Log_File%" more +1>.tmp
+   >"%Log_File%" type .tmp
    del .tmp
    %Logging%
    )
@@ -183,7 +183,7 @@ rem копируем файл с логами в каталог
 ::  для синхронизации с облаком
 ::  /a /y копировать как тестовый файл
 ::  подтверждать замену автоматически
-copy /y %LogFile% %Backup%
+copy /y %Log_File% %Backup%
 
 rem удаление старых архивов
 rem если текущего архива очистку не проводить
@@ -194,7 +194,7 @@ rem forfiles - для каждого файла выполнять
 :: /M *.rar - если архив rar
 :: /D -%NumberArchives% - с датой создания более …
 :: /C "cmd /c del /q @PATH" - удалять без подтверждения
-if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @PATH")
+if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C "cmd /c del /q @PATH")
 
 rem блок отправки емайл
 rem -smtp  - сервер
@@ -247,6 +247,6 @@ rem восстанавливаем настройки
 :: (на случай если скрипт запускался
 :: другим скриптом)
 color 07
-chcp %PrevCP% >nul
+chcp %Prev_CP% >nul
 endlocal
 rem exit /b
