@@ -196,6 +196,9 @@ rem Удаление старых архивов.
 ::  /C "cmd /c del /q @PATH" - удалять без подтверждения
 if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C "cmd /c del /q @PATH")
 
+rem Отправка email с уведомлением о ошибке.
+if %Error%==1 (set Email_To_Subject="Ошибка при архивирования"
+Email_To_Text=%Result%)
 
 rem Блок отправки емайл.
 ::  -smtp  - сервер.
@@ -213,8 +216,9 @@ rem Блок отправки емайл.
 ::  -cs        - кодировка текста.
 ::  -mime-type - тип вложения.
 ::  ^ - перенос на новую строку.
-%Email_Sender_Program%^
- -smtp %SMTP_Server%^
+::  Первый параметр на одной строке 
+::  с командой, иначе ошибка.
+%Email_Sender_Program% -smtp %SMTP_Server%^
  -port %SMTP_Port%^
  -ssl^
  -auth-login^
