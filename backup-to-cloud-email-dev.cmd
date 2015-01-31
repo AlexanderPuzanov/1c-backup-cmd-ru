@@ -204,6 +204,7 @@ Email_To_Text=%Result%
 goto Email_Send)
 
 
+
 goto Skip_Email_Send
 
 :Email_Send
@@ -222,6 +223,10 @@ rem Блок отправки емайл.
 ::  -enc-type  - тип кодирования.
 ::  -cs        - кодировка текста.
 ::  -mime-type - тип вложения.
+::  %Email_Send_Attach%
+::  -attach %Log_File%,text/plain,a
+::  переслать вложенный файл.
+::  Путь, mime тип, а (вложение).
 ::  ^ - перенос на новую строку.
 ::  Первый параметр на одной строке 
 ::  с командой, иначе ошибка.
@@ -237,7 +242,8 @@ rem Блок отправки емайл.
  -sub %Email_To_Subject%^
  -cs "Windows-1251"^
  -enc-type "7bit"^ 
- -M %Email_To_Text%
+ -M %Email_To_Text%^
+ %Email_Send_Attach%
  
 :Skip_Email_Send
 
