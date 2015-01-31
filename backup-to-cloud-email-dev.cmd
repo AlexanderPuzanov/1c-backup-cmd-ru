@@ -204,6 +204,8 @@ Email_To_Text=%Result%
 goto Email_Send)
 
 
+goto Skip_Email_Send
+
 :Email_Send
 rem Блок отправки емайл.
 ::  -smtp  - сервер.
@@ -236,6 +238,8 @@ rem Блок отправки емайл.
  -cs "Windows-1251"^
  -enc-type "7bit"^ 
  -M %Email_To_Text%
+ 
+:Skip_Email_Send
 
 rem Если есть важные ошибки
 ::  меняем цвет текста на красный
