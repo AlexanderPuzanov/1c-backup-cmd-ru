@@ -203,8 +203,16 @@ if %Error%==1 (set Email_To_Subject="ќшибка при архивировани€"
 Email_To_Text=%Result%
 goto Email_Send)
 
+rem Ѕлок email с ежемес€чным отчетом (файл логов)
+::  ≈сли сегодн€ первое число мес€ца
+::  переслать файл логов.
+::  %DATE:~0,2% от сегодн€шней даты (01.01.2015)
+::  вз€ть два элемента начина€ с первого.
+if %DATE:~0,2%==1 (set Email_To_Subject="≈мемес€чный отчет"
+set Email_To_Text="‘айл логов архивировани€ за %DATE:~3,7%"
+set Email_Send_Attach=-attach %Log_File%,text/plain,a)
 
-
+rem ≈сли нет причины отправл€ть email пропустить блок
 goto Skip_Email_Send
 
 :Email_Send
