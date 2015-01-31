@@ -197,9 +197,14 @@ rem Удаление старых архивов.
 if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C "cmd /c del /q @PATH")
 
 rem Отправка email с уведомлением о ошибке.
+::  Если были ошибки установить тему письма
+::  и записать сообщение об ошибке в теме письма
 if %Error%==1 (set Email_To_Subject="Ошибка при архивирования"
-Email_To_Text=%Result%)
+Email_To_Text=%Result%
+goto Email_Send)
 
+
+:Email_Send
 rem Блок отправки емайл.
 ::  -smtp  - сервер.
 ::  -port  - порт.
