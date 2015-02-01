@@ -30,9 +30,10 @@ https://disk.yandex.ru/download/YandexDiskSetup.exe
 Пакетный файл написан 19/01/2015
 Последнее исправление внесено 26/01/2015
 Автор Александр Пузанов
+email: puzanov.alexandr@gmail.com
 --------------------------------------
 
-Этот блок содержит настройки скрипта
+Этот блок содержит настройки скрипта.
 Концевые слеши в путях не ставить!
 Не забудьте установить свои данные!
 
@@ -71,36 +72,41 @@ rem Данные получателя.
 ::  На эту почту будут отправляться
 ::  уведомления о ошибках.
 set Email_To=sysadmin@yandex.ru
+rem --------------------------------------
 
 rem Рабочий блок
 
 rem Данные отправителя
-::  smtp сервер
+rem SMTP сервер
 set SMTP_Server=smtp.yandex.ru
-::  порт сервера
+rem Порт сервера
 set SMTP_Port=465
 rem Логин получаем логин (часть email до @yandex.ru).
 ::  Взять из вывода команды ('echo %Email_Sender%')
 ::  первый элемент (tokens=1). Разделитель (delims=@).
-for /f "tokens=1 delims=@" %%i in ('echo %Email_Sender%') do (set Email_Login=%%i)
+for /f "tokens=1 delims=@" %%i in ('echo %Email_Sender%') do 
+	(set Email_Login=%%i)
 ::  Имя отправителя (имя сервера)
 set Sender_Name="Сервер — %computername%"
 
-rem Путь к каталогу со скриптом (автоматически)
+rem Путь к каталогу со скриптом
+::  (автоматически).
 set Path_Script="%~dp0"
-rem Метка наличие ошибок
+rem Флаг наличие ошибокэ
 set Error=0
 rem Файл логов (в каталоге со скриптом).
 set Log_File=%Path_Script%backup.log
 
-rem Проверки 
+rem Проверки путей.
 rem Если недоступен каталог с базами.
 if not exist %Source% (goto No_SourceDir)
-rem Если недоступен каталог для архивов
+rem Если недоступен каталог для архивов.
 if not exist %Backup% (goto No_BackupDir)
+
 rem Автоопределение пути к WinRar.
 ::  Ошибка если не найден.
 if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set Archive_Program="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set Archive_Program="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto No_Archive_Program))
+
 rem Если сегодня архив уже был создан.
 ::  %DATE% текущая дата (системная переменная).
 if exist %Backup%\%DATE%.rar (goto Exist_Backup)
@@ -133,11 +139,12 @@ if %ErrorLevel%==0 (set Result="Архив создан успешно"
 goto Move_Archive) else (set Result="Ошибка - %ErrorLevel%"
 goto Error)
 
-:Move_Archive
 rem Перемещение архива в папку для хранения.
 ::  %DATE% текущая дата (системная переменная).
 rem Переместить архив в папку синхронизации с облаком.
+:Move_Archive
 move %Path_Script%%DATE%.rar %Backup%
+
 rem Проверить результат перемещения и записать в лог файл.
 if exist %Backup%\%DATE%.rar (set Result="Задание выполнено успешно") else (set Result="Ошибка копирования файла"
 goto Error)
@@ -159,10 +166,10 @@ goto Error
 set Result="Архив сегодня уже был создан"
 goto Log
 
+rem Поднятие флага ошибок. 
 :Error
 set Error=1
 
-:Log
 rem Запись логов и очистка старых записей.
 ::  %DATE% текущая дата (системная переменная).
 ::  %TIME% текущие время (системная переменная).
@@ -171,6 +178,7 @@ rem Запись логов и очистка старых записей.
 ::  %Number_Strings_Log% максимальное количество строк
 ::  в файле логов.
 ::  "Магия" http://www.cyberforum.ru/cmd-bat/thread1299615.html
+:Log
 set "Logging=echo %DATE% %TIME% %Result% >> "%Log_File%""
 if exist "%Log_File%" (
  for /f %%i in ('"<"%Log_File%" find /c /v """') do (
@@ -187,10 +195,9 @@ if exist "%Log_File%" (
  %Logging%
  )
 
-rem копируем файл с логами в каталог
-::  для синхронизации с облаком
-::  /a /y копировать как тестовый файл
-::  подтверждать замену автоматически
+rem Копируем файл с логами в каталог
+::  для синхронизации с облаком.
+::  /y подтверждать замену автоматически
 copy /y %Log_File% %Backup%
 
 rem Удаление старых архивов.
@@ -206,12 +213,12 @@ if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%Number_Archives
 
 rem Отправка email с уведомлением о ошибке.
 ::  Если были ошибки установить тему письма
-::  и записать сообщение об ошибке в теме письма
+::  и записать сообщение об ошибке в теме письма.
 if %Error%==1 (set Email_To_Subject="Ошибка при архивирования"
 Email_To_Text=%Result%
 goto Email_Send)
 
-rem Блок email с ежемесячным отчетом (файл логов)
+rem Блок email с ежемесячным отчетом (файл логов).
 ::  Если сегодня первое число месяца
 ::  переслать файл логов.
 ::  %DATE:~0,2% от сегодняшней даты (01.01.2015)
@@ -229,7 +236,7 @@ set Email_To_Text="%Result%"
 set Email_Send_Attach=-attach %Log_File%,text/plain,a
 goto Email_Send)
 
-rem Если нет причины отправлять email пропустить блок
+rem Если нет причины отправлять email пропустить блок.
 goto Skip_Email_Send
 
 :Email_Send
