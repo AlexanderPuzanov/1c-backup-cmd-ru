@@ -218,7 +218,16 @@ rem Блок email с ежемесячным отчетом (файл логов)
 ::  взять два элемента начиная с первого.
 if %DATE:~0,2%==1 (set Email_To_Subject="Емемесячный отчет"
 set Email_To_Text="Файл логов архивирования за %DATE:~3,7%"
-set Email_Send_Attach=-attach %Log_File%,text/plain,a)
+set Email_Send_Attach=-attach %Log_File%,text/plain,a
+goto Email_Send)
+
+rem Если включен тестовый режим.
+rem Отправка тестового письма.
+if Test_Mode==1 (
+set Email_To_Subject="Тестовое письмо"
+set Email_To_Text="%Result%"
+set Email_Send_Attach=-attach %Log_File%,text/plain,a
+goto Email_Send)
 
 rem Если нет причины отправлять email пропустить блок
 goto Skip_Email_Send
@@ -263,13 +272,14 @@ rem Блок отправки емайл.
  
 :Skip_Email_Send
 
+rem Если включен тестовый режим.
 rem Если есть важные ошибки
 ::  меняем цвет текста на красный
 ::  ставим скрипт на паузу.
 if Test_Mode==1 (
-if %Error%==1 (color 0c
-echo %Result%
-pause)
+	if %Error%==1 (color 0c
+	echo %Result%
+	pause)
 
 rem Восстанавливаем настройки
 ::  (на случай если скрипт запускался
