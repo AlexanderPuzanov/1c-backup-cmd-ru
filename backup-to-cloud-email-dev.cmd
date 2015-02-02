@@ -51,11 +51,11 @@ rem "Путь к каталогу с базами 1С Бухгалтерия".
 ::   (английская раскладка клавиатуры).
 set Source="D:\1C\Base"
 rem За сколько дней хранить архивы
-set Number_Archives=1
+set Number_Archives=30
 rem Пароль для архивов
 set Password=123
 rem Максимальное количество строк в файле логов
-set Number_Strings_Log=2
+set Number_Strings_Log=90
 rem Путь к каталогу синхронизации с облаком.
 rem Внимание!!! В пути не должно быть пробелов!!!
 set Backup=E:\YandexDisk\backup-1C
@@ -105,7 +105,13 @@ if not exist %Backup% (goto No_BackupDir)
 
 rem Автоопределение пути к WinRar.
 ::  Ошибка если не найден.
-if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set Archive_Program="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set Archive_Program="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto No_Archive_Program))
+if exist "%PROGRAMFILES%\WinRAR\rar.exe" (
+	set Archive_Program="%PROGRAMFILES%\WinRAR\rar.exe"
+	) else (
+		if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (
+		set Archive_Program="%PROGRAMFILES(x86)%\WinRAR\rar.exe"
+			) else (goto No_Archive_Program)
+		)
 
 rem Если сегодня архив уже был создан.
 ::  %DATE% текущая дата (системная переменная).
@@ -128,7 +134,8 @@ rem Аргументы командной строки для rar.exe
 :: -hp    - зашифровать архив включая имена файлов
 :: -k     - заблокировать архив (защита от изменений)
 :: --     - больше нет аргументов
-%Archive_Program% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp%Password% -k %Path_Script% %Source% --
+%Archive_Program% a -cfg- -ma -htb -m5 -rr10p -ac -ow^
+ -agDD.MM.YYYY -ep1 -hp%Password% -k %Path_Script% %Source% --
 
 rem Результат архивирования.
 ::  %ErrorLevel% результат выполнения архивирования.
@@ -136,8 +143,8 @@ rem Результат архивирования.
 ::  Если успешно приступить к перемещению архива
 ::  Если ошибка записать в ее код в лог файл.
 if %ErrorLevel%==0 (set Result="Архив создан успешно"
-goto Move_Archive) else (set Result="Ошибка - %ErrorLevel%"
-goto Error)
+	goto Move_Archive) else (set Result="Ошибка - %ErrorLevel%"
+	goto Error)
 
 rem Перемещение архива в папку для хранения.
 ::  %DATE% текущая дата (системная переменная).
@@ -146,8 +153,11 @@ rem Переместить архив в папку синхронизации с облаком.
 move %Path_Script%%DATE%.rar %Backup%
 
 rem Проверить результат перемещения и записать в лог файл.
-if exist %Backup%\%DATE%.rar (set Result="Задание выполнено успешно") else (set Result="Ошибка копирования файла"
-goto Error)
+if exist %Backup%\%DATE%.rar (set Result="Задание выполнено успешно"
+	) else (set Result="Ошибка копирования файла"
+		goto Error)
+
+rem Если не было ошибок переходим к записи логов.		
 goto Log
 
 :No_Archive_Program
@@ -181,18 +191,17 @@ rem Запись логов и очистка старых записей.
 :Log
 set "Logging=echo %DATE% %TIME% %Result% >> "%Log_File%""
 if exist "%Log_File%" (
- for /f %%i in ('"<"%Log_File%" find /c /v """') do (
-  if %%i lss %Number_Strings_Log% (
-   %Logging%
-  ) else (
-   <"%Log_File%" more +1>.tmp
-   >"%Log_File%" type .tmp
-   del .tmp
-   %Logging%
-   )
-  )
-) else (
- %Logging%
+	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
+		if %%i lss %Number_Strings_Log% (
+			%Logging%
+		) else (
+			<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
+			del .tmp
+			%Logging%
+			)
+		)
+	) else (
+		%Logging%
  )
 
 rem Копируем файл с логами в каталог
@@ -209,14 +218,15 @@ rem Удаление старых архивов.
 ::  /M *.rar - если архив rar.
 ::  /D -%NumberArchives% - с датой создания более …
 ::  /C "cmd /c del /q @PATH" - удалять без подтверждения
-if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C "cmd /c del /q @PATH")
+if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar^ 
+	/D -%Number_Archives% /C "cmd /c del /q @PATH")
 
 rem Отправка email с уведомлением о ошибке.
 ::  Если были ошибки установить тему письма
 ::  и записать сообщение об ошибке в теме письма.
 if %Error%==1 (set Email_To_Subject="Ошибка при архивирования"
-Email_To_Text=%Result%
-goto Email_Send)
+	Email_To_Text=%Result%
+	goto Email_Send)
 
 rem Блок email с ежемесячным отчетом (файл логов).
 ::  Если сегодня первое число месяца
@@ -224,17 +234,17 @@ rem Блок email с ежемесячным отчетом (файл логов).
 ::  %DATE:~0,2% от сегодняшней даты (01.01.2015)
 ::  взять два элемента начиная с первого.
 if %DATE:~0,2%==1 (set Email_To_Subject="Емемесячный отчет"
-set Email_To_Text="Файл логов архивирования за %DATE:~3,7%"
-set Email_Send_Attach=-attach %Log_File%,text/plain,a
-goto Email_Send)
+	set Email_To_Text="Файл логов архивирования за %DATE:~3,7%"
+	set Email_Send_Attach=-attach %Log_File%,text/plain,a
+	goto Email_Send)
 
 rem Если включен тестовый режим.
 rem Отправка тестового письма.
 if Test_Mode==1 (
-set Email_To_Subject="Тестовое письмо"
-set Email_To_Text="%Result%"
-set Email_Send_Attach=-attach %Log_File%,text/plain,a
-goto Email_Send)
+	set Email_To_Subject="Тестовое письмо"
+	set Email_To_Text="%Result%"
+	set Email_Send_Attach=-attach %Log_File%,text/plain,a
+	goto Email_Send)
 
 rem Если нет причины отправлять email пропустить блок.
 goto Skip_Email_Send
