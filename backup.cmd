@@ -1,10 +1,8 @@
 @echo off
 setlocal
 for /f "tokens=2 delims=:" %%i in ('chcp') do (
-    set PrevCP=%%i)
-
+    set Prev_CP=%%i)
 chcp 1251 > nul
-
 goto Start
 --------------------------------------
 Этот пакетный файл предназначен
@@ -20,86 +18,108 @@ goto Start
 содержать пробелы!
 --------------------------------------
 Пакетный файл создан 24/01/2015
-Последнее исправление внесено 26/01/2015
+Последнее исправление внесено 02/02/2015
 Автор Александр Пузанов
 --------------------------------------
 
 Этот блок содержит настройки скрипта
 Концевые слеши в путях не ставить!
-Не забудьте установить свои данные!
+Не забудьтете установить свои данные!
 
 :Start
-rem "Путь к каталогу с базами 1С Бухгалтерия"
-:: если в пути есть пробелы, обязательно
-:: указывать в кавычках (английская раскладка клавиатуры)
+rem Тестовый режим
+::  Предназначен для проверки настроек.
+::  При ошибках консоль не закрывается,
+::  отправляется письмо с вложенным логом
+::  на email
+::  1 - включен, 0 - выключен
+set Test_Mode=0
+rem "Путь к каталогу с базами 1С Бухгалтерия".
+::   Если в пути есть пробелы, обязательно
+::   указывать в кавычках
+::   (английская раскладка клавиатуры).
 set Source="D:\1C\Base"
 rem За сколько дней хранить архивы
-set NumberArchives=10
+set Number_Archives=30
 rem Пароль для архивов
 set Password=123
 rem Максимальное количество строк в файле логов
-set NumberStringsLog=90
+set Number_Strings_Log=90
+rem --------------------------------------
 
 rem Рабочий блок
 
 set Backup=%~dp0
 set Error=0
-set LogFile=%Backup%backup.log
+set Log_File=%Backup%backup.log
 
-if not exist %Source% (goto NoSourceDir)
-if not exist %Backup% (goto NoBackupDir)
-if exist "%PROGRAMFILES%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES%\WinRAR\rar.exe") else (if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (set ArchiveProgram="%PROGRAMFILES(x86)%\WinRAR\rar.exe") else (goto NoArchiveProgram))
-if exist %Backup%%DATE%.rar (goto ExistBackup)
+if not exist %Source% (goto No_SourceDir)
+if not exist %Backup% (goto No_BackupDir)
 
-%ArchiveProgram% a -cfg- -ma -htb -m5 -rr10p -ac -ow -agDD.MM.YYYY -ep1 -hp%Password% -k %Backup% %Source% --
+if exist "%PROGRAMFILES%\WinRAR\rar.exe" (
+	set Archive_Program="%PROGRAMFILES%\WinRAR\rar.exe"
+	) else (
+		if exist "%PROGRAMFILES(x86)%\WinRAR\rar.exe" (
+		set Archive_Program="%PROGRAMFILES(x86)%\WinRAR\rar.exe"
+			) else (goto No_Archive_Program)
+		)
+
+if exist %Backup%\%DATE%.rar (goto Exist_Backup)
+
+%ArchiveProgram% a -cfg- -ma -htb -m5 -rr10p -ac -ow^
+ -agDD.MM.YYYY -ep1 -hp%Password% -k %Backup% %Source% --
 
 if %ErrorLevel%==0 (set Result="Архив создан успешно"
-goto log) else (set Result="Ошибка - %ErrorLevel%"
-goto Error)
+	goto Move_Archive) else (set Result="Ошибка - %ErrorLevel%"
+	goto Error)
+	
+goto Log
 
-:NoArchiveProgram
+:No_Archive_Program
 set Result="Программа архиватор не доступна"
 goto Error
 
-:NoSourceDir
+:No_Source_Dir
 set Result="Каталог с базами не доступен"
 goto Error
 
-:NoBackupDir
+:No_Backup_Dir
 set Result="Каталог для архивирования не доступен"
 goto Error
 
-:ExistBackup
+:Exist_Backup
 set Result="Архив сегодня уже был создан"
 goto Log
-
+ 
 :Error
 set Error=1
 
 :Log
-rem "Магия" http://www.cyberforum.ru/cmd-bat/thread1299615.html
-set "Logging=echo %DATE% %TIME% %Result% >> "%LogFile%""
-if exist "%LogFile%" (
- for /f %%i in ('"<"%LogFile%" find /c /v """') do (
-  if %%i lss %NumberStringsLog% (
-   %Logging%
-  ) else (
-   <"%LogFile%" more +1>.tmp
-   >"%LogFile%" type .tmp
-   del .tmp
-   %Logging%
-   )
-  )
-) else (
- %Logging%
+set "Logging=echo %DATE% %TIME% %Result% >> "%Log_File%""
+if exist "%Log_File%" (
+	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
+		if %%i lss %Number_Strings_Log% (
+			%Logging%
+		) else (
+			<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
+			del .tmp
+			%Logging%
+			)
+		)
+	) else (
+		%Logging%
  )
 
-if exist %Backup%%DATE%.rar (forfiles /P %Backup% /M *.rar /D -%NumberArchives% /C "cmd /c del /q @PATH")
+if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar^ 
+	/D -%Number_Archives% /C "cmd /c del /q @PATH")
 
-if %Error%==1 (color 0c
-echo %Result%
-pause)
+if Test_Mode==1 (
+	if %Error%==1 (color 0c
+		echo %Result%
+		pause)
+
 color 07
-chcp %PrevCP% >nul
+chcp %Prev_CP% >nul
 endlocal
+@echo on
 exit /b

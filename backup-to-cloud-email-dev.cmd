@@ -92,7 +92,7 @@ set Sender_Name="Сервер — %computername%"
 rem Путь к каталогу со скриптом
 ::  (автоматически).
 set Path_Script="%~dp0"
-rem Флаг наличие ошибокэ
+rem Флаг наличие ошибок.
 set Error=0
 rem Файл логов (в каталоге со скриптом).
 set Log_File=%Path_Script%backup.log
@@ -157,7 +157,7 @@ if exist %Backup%\%DATE%.rar (set Result="Задание выполнено успешно"
 	) else (set Result="Ошибка копирования файла"
 		goto Error)
 
-rem Если не было ошибок переходим к записи логов.		
+rem Если не было ошибок переходим к записи логов.
 goto Log
 
 :No_Archive_Program
@@ -304,4 +304,5 @@ rem Восстанавливаем настройки
 color 07
 chcp %Prev_CP% >nul
 endlocal
+@echo on
 rem exit /b

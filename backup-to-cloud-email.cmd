@@ -193,4 +193,5 @@ if Test_Mode==1 (
 color 07
 chcp %Prev_CP% >nul
 endlocal
+@echo on
 exit /b
