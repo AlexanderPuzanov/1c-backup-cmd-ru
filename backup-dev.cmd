@@ -52,9 +52,9 @@ rem --------------------------------------
 
 rem Рабочий блок
 
-rem Путь к каталогу для хранения резервных копий
-::  (каталог в котором находится скрипт)
-::  устанавливается автоматически.
+rem Путь к каталогу со скриптом.
+::  %~dp0 – полный путь (включая завершающий слэш)
+::  к каталогу выполняемого скрипта.
 set Backup=%~dp0
 rem Флаг наличие ошибок.
 set Error=0
@@ -145,18 +145,18 @@ rem Запись логов и очистка старых записей.
 ::  в файле логов.
 ::  "Магия" http://www.cyberforum.ru/cmd-bat/thread1299615.html
 :Log
-set Logging=echo %DATE% %TIME% %Result% >> "%Log_File%"
+set Logging=%DATE% %TIME% %Result%
 if exist "%Log_File%" (
 	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
 		if %%i lss %Number_Strings_Log% (
-			%Logging%
+			echo %Logging%>>"%Log_File%"
 			) else (
 				<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
 				del .tmp
-				%Logging%)
+				echo %Logging%>>"%Log_File%")
 		)
 	) else (
-		%Logging%)
+		echo %Logging%>>"%Log_File%")
 
 rem Удаление старых архивов.
 ::  Если нет текущего архива, очистку не проводить
