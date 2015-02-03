@@ -28,7 +28,7 @@ https://disk.yandex.ru/download/YandexDiskSetup.exe
 временных файлов в процессе работы.
 --------------------------------------
 Пакетный файл написан 27/01/2015
-Последнее исправление внесено 02/02/2015
+Последнее исправление внесено 03/02/2015
 Автор Александр Пузанов
 email: puzanov.alexandr@gmail.com
 --------------------------------------
@@ -60,7 +60,7 @@ rem Путь к каталогу синхронизации с облаком.
 rem Внимание!!! В пути не должно быть пробелов!!!
 set Backup=E:\YandexDisk\backup-1C
 rem Путь к программе mailsend.exe
-set Email_Sender_Program=D:\mailsend\mailsend.exe
+set Email_Sender_Program=D:\mailsend\mailsend1.17b14.exe
 rem Данные отправителя.
 ::  С этой почты будут отправляться
 ::  уведомления о ошибках.
