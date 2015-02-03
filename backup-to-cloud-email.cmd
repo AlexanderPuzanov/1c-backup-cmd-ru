@@ -181,12 +181,12 @@ goto Skip_Email_Send
  -auth-login^
  -user %Email_Login%^
  -pass %Email_Password%^
- -t %Email_To%^
  -f %Email_Sender%^
- -name %Sender_Name%^
- -sub %Email_To_Subject%^
+ -t %Email_To%^
  -cs "Windows-1251"^
- -enc-type "7bit"^ 
+ -enc-type "7bit"^
+ -name %Sender_Name%^ 
+ -sub %Email_To_Subject%^
  -M %Email_To_Text%^
  %Email_Send_Attach%
  
