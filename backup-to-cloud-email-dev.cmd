@@ -230,7 +230,7 @@ rem ќтправка email с уведомлением о ошибке.
 ::  и записать сообщение об ошибке в теме письма.
 if %Error%==1 (
 	set Email_To_Subject="ќшибка при архивировани€"
-	Email_To_Text=%Result%
+	set Email_To_Text=%Result%
 	goto Email_Send)
 
 rem Ѕлок email с ежемес€чным отчетом (файл логов).
