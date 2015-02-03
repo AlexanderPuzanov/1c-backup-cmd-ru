@@ -166,7 +166,7 @@ if %DATE:~0,2%==1 (
 	set Email_Send_Attach=-attach %Log_File%,text/plain,a
 	goto Email_Send)
 
-if Test_Mode==1 (
+if %Test_Mode%==1 (
 	set Email_To_Subject="Тестовое письмо"
 	set Email_To_Text="%Result%"
 	set Email_Send_Attach=-attach %Log_File%,text/plain,a
@@ -191,7 +191,7 @@ goto Skip_Email_Send
  %Email_Send_Attach%
  
 :Skip_Email_Send
-if Test_Mode==1 (
+if %Test_Mode%==1 (
 	if %Error%==1 (color 0c
 		echo %Result%
 		pause)

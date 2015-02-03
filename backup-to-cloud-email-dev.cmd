@@ -246,7 +246,7 @@ if %DATE:~0,2%==1 (
 
 rem Если включен тестовый режим.
 rem Отправка тестового письма.
-if Test_Mode==1 (
+if %Test_Mode%==1 (
 	set Email_To_Subject="Тестовое письмо"
 	set Email_To_Text="%Result%"
 	set Email_Send_Attach=-attach %Log_File%,text/plain,a
@@ -299,7 +299,7 @@ rem Если включен тестовый режим.
 rem Если есть важные ошибки
 ::  меняем цвет текста на красный
 ::  ставим скрипт на паузу.
-if Test_Mode==1 (
+if %Test_Mode%==1 (
 	if %Error%==1 (color 0c
 		echo %Result%
 		pause)

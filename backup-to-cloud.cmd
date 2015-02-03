@@ -134,7 +134,7 @@ if exist %Backup%\%DATE%.rar (
 	forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C ^
 	"cmd /c del /q @PATH")
 
-if Test_Mode==1 (
+if %Test_Mode%==1 (
 	if %Error%==1 (color 0c
 		echo %Result%
 		pause)
