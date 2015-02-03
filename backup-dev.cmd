@@ -18,8 +18,6 @@ goto Start
 --------------------------------------
 Разместить скрипт в каталоге
 для хранения резервных копий.
-ВНИМАНИЕ! Путь к катологу не должен 
-содержать пробелы!
 --------------------------------------
 Пакетный файл создан 24/01/2015
 Последнее исправление внесено 03/02/2015
@@ -57,7 +55,6 @@ rem Рабочий блок
 rem Путь к каталогу для хранения резервных копий
 ::  (каталог в котором находится скрипт)
 ::  устанавливается автоматически.
-rem Внимание!!! В адресе не должно быть пробелов!!!
 set Backup=%~dp0
 rem Флаг наличие ошибок.
 set Error=0
@@ -148,7 +145,7 @@ rem Запись логов и очистка старых записей.
 ::  в файле логов.
 ::  "Магия" http://www.cyberforum.ru/cmd-bat/thread1299615.html
 :Log
-set "Logging=echo %DATE% %TIME% %Result% >> "%Log_File%""
+set Logging=echo %DATE% %TIME% %Result% >> "%Log_File%"
 if exist "%Log_File%" (
 	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
 		if %%i lss %Number_Strings_Log% (
@@ -170,8 +167,8 @@ rem Удаление старых архивов.
 ::  /M *.rar - если архив rar.
 ::  /D -%NumberArchives% - с датой создания более …
 ::  /C "cmd /c del /q @PATH" - удалять без подтверждения
-if exist %Backup%\%DATE%.rar (
-	forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C ^
+if exist "%Backup%\%DATE%.rar" (
+	forfiles /P "%Backup%" /M *.rar /D -%Number_Archives% /C ^
 	"cmd /c del /q @PATH")
 
 rem Если включен тестовый режим.

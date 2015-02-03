@@ -49,7 +49,7 @@ rem "Путь к каталогу с базами 1С Бухгалтерия".
 ::   Если в пути есть пробелы, обязательно
 ::   указывать в кавычках
 ::   (английская раскладка клавиатуры).
-set Source="D:\1C\Base"
+set "Source=D:\1C\Base"
 rem За сколько дней хранить архивы.
 set Number_Archives=30
 rem Пароль для архивов.
@@ -57,10 +57,9 @@ set Password=123
 rem Максимальное количество строк в файле логов.
 set Number_Strings_Log=90
 rem Путь к каталогу синхронизации с облаком.
-rem Внимание!!! В пути не должно быть пробелов!!!
-set Backup=E:\YandexDisk\backup-1C
+set "Backup=E:\YandexDisk\backup-1C"
 rem Путь к программе mailsend.exe
-set Email_Sender_Program=D:\mailsend\mailsend1.17b14.exe
+set "Email_Sender_Program=D:\mailsend\mailsend1.17b14.exe"
 rem Данные отправителя.
 ::  С этой почты будут отправляться
 ::  уведомления о ошибках.
@@ -92,17 +91,17 @@ set Sender_Name="Сервер — %computername%"
 
 rem Путь к каталогу со скриптом
 ::  (автоматически).
-set Path_Script="%~dp0"
+set "Path_Script=%~dp0"
 rem Флаг наличие ошибок.
 set Error=0
 rem Файл логов (в каталоге со скриптом).
-set Log_File=%Path_Script%backup.log
+set "Log_File=%Path_Script%backup.log"
 
 rem Проверки путей.
 rem Если недоступен каталог с базами.
-if not exist %Source% (goto No_SourceDir)
+if not exist "%Source%" (goto No_SourceDir)
 rem Если недоступен каталог для архивов.
-if not exist %Backup% (goto No_BackupDir)
+if not exist "%Backup%" (goto No_BackupDir)
 
 rem Автоопределение пути к WinRar.
 ::  Ошибка если не найден.
@@ -116,7 +115,7 @@ if exist "%PROGRAMFILES%\WinRAR\rar.exe" (
 
 rem Если сегодня архив уже был создан.
 ::  %DATE% текущая дата (системная переменная).
-if exist %Backup%\%DATE%.rar (goto Exist_Backup)
+if exist "%Backup%\%DATE%.rar" (goto Exist_Backup)
 
 rem Архивирование
 rem Аргументы командной строки для rar.exe
@@ -136,7 +135,7 @@ rem Аргументы командной строки для rar.exe
 :: -k     - заблокировать архив (защита от изменений)
 :: --     - больше нет аргументов
 %Archive_Program% a -cfg- -ma -htb -m5 -rr10p -ac -ow^
- -agDD.MM.YYYY -ep1 -hp%Password% -k %Path_Script% %Source% --
+ -agDD.MM.YYYY -ep1 -hp%Password% -k "%Path_Script%" "%Source%" --
 
 rem Результат архивирования.
 ::  %ErrorLevel% результат выполнения архивирования.
@@ -154,10 +153,10 @@ rem Перемещение архива в папку для хранения.
 ::  %DATE% текущая дата (системная переменная).
 rem Переместить архив в папку синхронизации с облаком.
 :Move_Archive
-move %Path_Script%%DATE%.rar %Backup%
+move "%Path_Script%%DATE%.rar" "%Backup%"
 
 rem Проверить результат перемещения и записать в лог файл.
-if exist %Backup%\%DATE%.rar (
+if exist "%Backup%\%DATE%.rar" (
 	set Result="Задание выполнено успешно"
 	) else (set Result="Ошибка копирования файла"
 		goto Error)
@@ -194,7 +193,7 @@ rem Запись логов и очистка старых записей.
 ::  в файле логов.
 ::  "Магия" http://www.cyberforum.ru/cmd-bat/thread1299615.html
 :Log
-set "Logging=echo %DATE% %TIME% %Result% >> "%Log_File%""
+set Logging=echo %DATE% %TIME% %Result% >> "%Log_File%"
 if exist "%Log_File%" (
 	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
 		if %%i lss %Number_Strings_Log% (
@@ -210,7 +209,7 @@ if exist "%Log_File%" (
 rem Копируем файл с логами в каталог
 ::  для синхронизации с облаком.
 ::  /y подтверждать замену автоматически
-copy /y %Log_File% %Backup%
+copy /y "%Log_File%" "%Backup%"
 
 rem Удаление старых архивов.
 ::  Если нет текущего архива, очистку не проводить
@@ -221,8 +220,8 @@ rem Удаление старых архивов.
 ::  /M *.rar - если архив rar.
 ::  /D -%NumberArchives% - с датой создания более …
 ::  /C "cmd /c del /q @PATH" - удалять без подтверждения
-if exist %Backup%\%DATE%.rar (
-	forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C ^
+if exist "%Backup%\%DATE%.rar" (
+	forfiles /P "%Backup%" /M *.rar /D -%Number_Archives% /C ^
 	"cmd /c del /q @PATH")
 
 rem Отправка email с уведомлением о ошибке.
@@ -241,15 +240,15 @@ rem Блок email с ежемесячным отчетом (файл логов).
 if %DATE:~0,2%==1 (
 	set Email_To_Subject="Емемесячный отчет"
 	set Email_To_Text="Файл логов архивирования за %DATE:~3,7%"
-	set Email_Send_Attach=-attach %Log_File%,text/plain,a
+	set "Email_Send_Attach=-attach "%Log_File%",text/plain,a"
 	goto Email_Send)
 
 rem Если включен тестовый режим.
 rem Отправка тестового письма.
 if %Test_Mode%==1 (
 	set Email_To_Subject="Тестовое письмо"
-	set Email_To_Text="%Result%"
-	set Email_Send_Attach=-attach %Log_File%,text/plain,a
+	set Email_To_Text=%Result%
+	set Email_Send_Attach=-attach "%Log_File%",text/plain,a
 	goto Email_Send)
 
 rem Если нет причины отправлять email пропустить блок.
@@ -272,7 +271,7 @@ rem Блок отправки емайл.
 ::  -cs        - кодировка текста.
 ::  -mime-type - тип вложения.
 ::  %Email_Send_Attach%
-::  -attach %Log_File%,text/plain,a
+::  -attach "%Log_File%,text/plain,a"
 ::  переслать вложенный файл.
 ::  Путь, mime тип, а (вложение).
 ::  ^ - перенос на новую строку.
@@ -288,10 +287,12 @@ rem Блок отправки емайл.
  -t %Email_To%^
  -cs "Windows-1251"^
  -enc-type "7bit"^
- -name %Sender_Name%^ 
- -sub %Email_To_Subject%^
+ -name %Sender_Name% -sub %Email_To_Subject%^
  -M %Email_To_Text%^
  %Email_Send_Attach%
+:: Тема отправки письма должна быть
+:: на одноя строке с другим параметром,
+:: иначе ошибка.
  
 :Skip_Email_Send
 
@@ -304,9 +305,9 @@ if %Test_Mode%==1 (
 		echo %Result%
 		pause)
 
-rem Восстанавливаем настройки
-::  (на случай если скрипт запускался
-::  другим скриптом)
+rem Восстанавливаем настройки.
+::  На случай если скрипт запускался
+::  другим скриптом.
 color 07
 chcp %Prev_CP% >nul
 endlocal
