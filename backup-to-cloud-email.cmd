@@ -74,8 +74,8 @@ rem Рабочий блок
 
 set SMTP_Server=smtp.yandex.ru
 set SMTP_Port=465
-for /f "tokens=1 delims=@" %%i in ('echo %Email_Sender%') do 
-	(set Email_Login=%%i)
+for /f "tokens=1 delims=@" %%i in ('echo %Email_Sender%') do (
+	set Email_Login=%%i)
 set Sender_Name="Сервер — %computername%"
 
 set Path_Script="%~dp0"
@@ -98,14 +98,18 @@ if exist %Backup%\%DATE%.rar (goto Exist_Backup)
 %Archive_Program% a -cfg- -ma -htb -m5 -rr10p -ac -ow^
  -agDD.MM.YYYY -ep1 -hp%Password% -k %Path_Script% %Source% --
 
-if %ErrorLevel%==0 (set Result="Архив создан успешно"
-	goto Move_Archive) else (set Result="Ошибка - %ErrorLevel%"
-	goto Error)
+if %ErrorLevel%==0 (
+	set Result="Архив создан успешно"
+	goto Move_Archive
+	) else (
+		set Result="Ошибка - %ErrorLevel%"
+		goto Error)
 
 :Move_Archive
 move %Path_Script%%DATE%.rar %Backup%
 
-if exist %Backup%\%DATE%.rar (set Result="Задание выполнено успешно"
+if exist %Backup%\%DATE%.rar (
+	set Result="Задание выполнено успешно"
 	) else (set Result="Ошибка копирования файла"
 		goto Error)
 	
@@ -136,26 +140,27 @@ if exist "%Log_File%" (
 	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
 		if %%i lss %Number_Strings_Log% (
 			%Logging%
-		) else (
-			<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
-			del .tmp
-			%Logging%
-			)
+			) else (
+				<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
+				del .tmp
+				%Logging%)
 		)
 	) else (
-		%Logging%
- )
+		%Logging%)
 
 copy /y %Log_File% %Backup%
 
-if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar^ 
-	/D -%Number_Archives% /C "cmd /c del /q @PATH")
+if exist %Backup%\%DATE%.rar (
+	forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C ^
+	"cmd /c del /q @PATH")
 
-if %Error%==1 (set Email_To_Subject="Ошибка при архивирования"
+if %Error%==1 (
+	set Email_To_Subject="Ошибка при архивирования"
 	Email_To_Text=%Result%
 	goto Email_Send)
 
-if %DATE:~0,2%==1 (set Email_To_Subject="Емемесячный отчет"
+if %DATE:~0,2%==1 (
+	set Email_To_Subject="Емемесячный отчет"
 	set Email_To_Text="Файл логов архивирования за %DATE:~3,7%"
 	set Email_Send_Attach=-attach %Log_File%,text/plain,a
 	goto Email_Send)

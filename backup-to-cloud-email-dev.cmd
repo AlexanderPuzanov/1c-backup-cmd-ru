@@ -84,8 +84,8 @@ set SMTP_Port=465
 rem Логин получаем логин (часть email до @yandex.ru).
 ::  Взять из вывода команды ('echo %Email_Sender%')
 ::  первый элемент (tokens=1). Разделитель (delims=@).
-for /f "tokens=1 delims=@" %%i in ('echo %Email_Sender%') do 
-	(set Email_Login=%%i)
+for /f "tokens=1 delims=@" %%i in ('echo %Email_Sender%') do (
+	set Email_Login=%%i)
 ::  Имя отправителя (имя сервера)
 set Sender_Name="Сервер — %computername%"
 
@@ -142,9 +142,12 @@ rem Результат архивирования.
 ::  Возвращается после работы rar.exe
 ::  Если успешно приступить к перемещению архива
 ::  Если ошибка записать в ее код в лог файл.
-if %ErrorLevel%==0 (set Result="Архив создан успешно"
-	goto Move_Archive) else (set Result="Ошибка - %ErrorLevel%"
-	goto Error)
+if %ErrorLevel%==0 (
+	set Result="Архив создан успешно"
+	goto Move_Archive
+	) else (
+		set Result="Ошибка - %ErrorLevel%"
+		goto Error)
 
 rem Перемещение архива в папку для хранения.
 ::  %DATE% текущая дата (системная переменная).
@@ -153,7 +156,8 @@ rem Переместить архив в папку синхронизации с облаком.
 move %Path_Script%%DATE%.rar %Backup%
 
 rem Проверить результат перемещения и записать в лог файл.
-if exist %Backup%\%DATE%.rar (set Result="Задание выполнено успешно"
+if exist %Backup%\%DATE%.rar (
+	set Result="Задание выполнено успешно"
 	) else (set Result="Ошибка копирования файла"
 		goto Error)
 
@@ -194,15 +198,13 @@ if exist "%Log_File%" (
 	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
 		if %%i lss %Number_Strings_Log% (
 			%Logging%
-		) else (
-			<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
-			del .tmp
-			%Logging%
-			)
+			) else (
+				<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
+				del .tmp
+				%Logging%)
 		)
 	) else (
-		%Logging%
- )
+		%Logging%)
 
 rem Копируем файл с логами в каталог
 ::  для синхронизации с облаком.
@@ -218,13 +220,15 @@ rem Удаление старых архивов.
 ::  /M *.rar - если архив rar.
 ::  /D -%NumberArchives% - с датой создания более …
 ::  /C "cmd /c del /q @PATH" - удалять без подтверждения
-if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar^ 
-	/D -%Number_Archives% /C "cmd /c del /q @PATH")
+if exist %Backup%\%DATE%.rar (
+	forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C ^
+	"cmd /c del /q @PATH")
 
 rem Отправка email с уведомлением о ошибке.
 ::  Если были ошибки установить тему письма
 ::  и записать сообщение об ошибке в теме письма.
-if %Error%==1 (set Email_To_Subject="Ошибка при архивирования"
+if %Error%==1 (
+	set Email_To_Subject="Ошибка при архивирования"
 	Email_To_Text=%Result%
 	goto Email_Send)
 
@@ -233,7 +237,8 @@ rem Блок email с ежемесячным отчетом (файл логов).
 ::  переслать файл логов.
 ::  %DATE:~0,2% от сегодняшней даты (01.01.2015)
 ::  взять два элемента начиная с первого.
-if %DATE:~0,2%==1 (set Email_To_Subject="Емемесячный отчет"
+if %DATE:~0,2%==1 (
+	set Email_To_Subject="Емемесячный отчет"
 	set Email_To_Text="Файл логов архивирования за %DATE:~3,7%"
 	set Email_Send_Attach=-attach %Log_File%,text/plain,a
 	goto Email_Send)

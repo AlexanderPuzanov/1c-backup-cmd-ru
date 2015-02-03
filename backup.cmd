@@ -69,9 +69,12 @@ if exist %Backup%\%DATE%.rar (goto Exist_Backup)
 %ArchiveProgram% a -cfg- -ma -htb -m5 -rr10p -ac -ow^
  -agDD.MM.YYYY -ep1 -hp%Password% -k %Backup% %Source% --
 
-if %ErrorLevel%==0 (set Result="Архив создан успешно"
-	goto Move_Archive) else (set Result="Ошибка - %ErrorLevel%"
-	goto Error)
+if %ErrorLevel%==0 (
+	set Result="Архив создан успешно"
+	goto Move_Archive
+	) else (
+		set Result="Ошибка - %ErrorLevel%"
+		goto Error)
 	
 goto Log
 
@@ -100,18 +103,17 @@ if exist "%Log_File%" (
 	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
 		if %%i lss %Number_Strings_Log% (
 			%Logging%
-		) else (
-			<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
-			del .tmp
-			%Logging%
-			)
+			) else (
+				<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
+				del .tmp
+				%Logging%)
 		)
 	) else (
-		%Logging%
- )
+		%Logging%)
 
-if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar^ 
-	/D -%Number_Archives% /C "cmd /c del /q @PATH")
+if exist %Backup%\%DATE%.rar (
+	forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C ^
+	"cmd /c del /q @PATH")
 
 if Test_Mode==1 (
 	if %Error%==1 (color 0c

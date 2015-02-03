@@ -115,9 +115,12 @@ rem Результат архивирования.
 ::  Возвращается после работы rar.exe
 ::  Если успешно приступить к перемещению архива
 ::  Если ошибка записать в ее код в лог файл.
-if %ErrorLevel%==0 (set Result="Архив создан успешно"
-	goto Move_Archive) else (set Result="Ошибка - %ErrorLevel%"
-	goto Error)
+if %ErrorLevel%==0 (
+	set Result="Архив создан успешно"
+	goto Move_Archive
+	) else (
+		set Result="Ошибка - %ErrorLevel%"
+		goto Error)
 
 rem Перемещение архива в папку для хранения.
 ::  %DATE% текущая дата (системная переменная).
@@ -126,7 +129,8 @@ rem Переместить архив в папку синхронизации с облаком.
 move %Path_Script%%DATE%.rar %Backup%
 
 rem Проверить результат перемещения и записать в лог файл.
-if exist %Backup%\%DATE%.rar (set Result="Задание выполнено успешно"
+if exist %Backup%\%DATE%.rar (
+	set Result="Задание выполнено успешно"
 	) else (set Result="Ошибка копирования файла"
 		goto Error)
 
@@ -167,15 +171,13 @@ if exist "%Log_File%" (
 	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
 		if %%i lss %Number_Strings_Log% (
 			%Logging%
-		) else (
-			<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
-			del .tmp
-			%Logging%
-			)
+			) else (
+				<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
+				del .tmp
+				%Logging%)
 		)
 	) else (
-		%Logging%
- )
+		%Logging%)
 
 rem Копируем файл с логами в каталог
 ::  для синхронизации с облаком.
@@ -190,9 +192,9 @@ rem Удаление старых архивов.
 ::  %DATE% текущая дата (системная переменная).
 ::  /M *.rar - если архив rar.
 ::  /D -%NumberArchives% - с датой создания более …
-::  /C "cmd /c del /q @PATH" - удалять без подтверждения
-if exist %Backup%\%DATE%.rar (forfiles /P %Backup% /M *.rar^ 
-	/D -%Number_Archives% /C "cmd /c del /q @PATH")
+if exist %Backup%\%DATE%.rar (
+	forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C ^
+	"cmd /c del /q @PATH")
 
 rem Если включен тестовый режим.
 rem Если есть важные ошибки
