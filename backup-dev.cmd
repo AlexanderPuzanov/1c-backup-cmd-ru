@@ -145,18 +145,19 @@ rem Запись логов и очистка старых записей.
 ::  в файле логов.
 ::  "Магия" http://www.cyberforum.ru/cmd-bat/thread1299615.html
 :Log
-set Logging=%DATE% %TIME% %Result%
+set "Logging=echo %DATE% %TIME% %Result%>>"%Log_File%""
 if exist "%Log_File%" (
 	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
 		if %%i lss %Number_Strings_Log% (
-			echo %Logging%>>"%Log_File%"
+			%Logging%
 			) else (
-				<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
+				<"%Log_File%" more +1>.tmp
+				>"%Log_File%" type .tmp
 				del .tmp
-				echo %Logging%>>"%Log_File%")
+				%Logging%)
 		)
-	) else (
-		echo %Logging%>>"%Log_File%")
+			) else (
+				%Logging%)
 
 rem Удаление старых архивов.
 ::  Если нет текущего архива, очистку не проводить
