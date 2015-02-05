@@ -163,7 +163,7 @@ rem Удаление старых архивов.
 ::  /M *.rar - если архив rar.
 ::  /D -%NumberArchives% - с датой создания более …
 ::  /C "cmd /c del /q @PATH" - удалять без подтверждения
-if exist "%Backup%\%DATE%.rar" (
+if exist "%Backup%%DATE%.rar" (
 	forfiles /P "%Backup%" /M *.rar /D -%Number_Archives% /C ^
 	"cmd /c del /q @PATH")
 
