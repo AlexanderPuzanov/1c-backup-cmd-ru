@@ -52,11 +52,15 @@ rem Рабочий блок
 rem Путь к каталогу со скриптом.
 ::  %~dp0 – полный путь (включая завершающий слэш)
 ::  к каталогу выполняемого скрипта.
+::  %Backup:~0,-1% удалить концевой символ.
+::  Нужно для блока удаления старых архивов.
+::  Команда forfiles не принимает путь с концевым слешем.
 set "Backup=%~dp0"
+set "Backup=%Backup:~0,-1%"
 rem Флаг наличие ошибок.
 set Error=0
 rem Файл логов (в каталоге со скриптом).
-set "Log_File=%Backup%backup.log"
+set "Log_File=%Backup%\backup.log"
 
 rem Проверки путей.
 rem Если недоступен каталог с базами.
@@ -74,7 +78,7 @@ if exist "%PROGRAMFILES%\WinRAR\rar.exe" (
 
 rem Если сегодня архив уже был создан.
 ::  %DATE% текущая дата (системная переменная).
-if exist "%Backup%%DATE%.rar" (goto Exist_Backup)
+if exist "%Backup%\%DATE%.rar" (goto Exist_Backup)
 
 rem Архивирование
 rem Аргументы командной строки для rar.exe
@@ -94,7 +98,7 @@ rem Аргументы командной строки для rar.exe
 :: -k     - заблокировать архив (защита от изменений)
 :: --     - больше нет аргументов
 %Archive_Program% a -cfg- -ma -htb -m5 -rr10p -ac -ow^
- -agDD.MM.YYYY -ep1 -hp%Password% -k "%Backup%" "%Source%" --
+ -agDD.MM.YYYY -ep1 -hp%Password% -k "%Backup%\" "%Source%" --
 
 rem Результат архивирования.
 ::  %ErrorLevel% результат выполнения архивирования.
@@ -162,7 +166,7 @@ rem Удаление старых архивов.
 ::  /M *.rar - если архив rar.
 ::  /D -%NumberArchives% - с датой создания более …
 ::  /C "cmd /c del /q @PATH" - удалять без подтверждения
-if exist "%Backup%%DATE%.rar" (
+if exist "%Backup%\%DATE%.rar" (
 	forfiles /P "%Backup%" /M *.rar /D -%Number_Archives% /C ^
 	"cmd /c del /q @PATH")
 
