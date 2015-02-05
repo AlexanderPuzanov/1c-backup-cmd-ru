@@ -60,7 +60,7 @@ set "Log_File=%Backup%backup.log"
 
 rem Проверки путей.
 rem Если недоступен каталог с базами.
-if not exist "%Source%" (goto No_Source_Dir)
+if not exist "%Source%\" (goto No_Source_Dir)
 
 rem Автоопределение пути к WinRar.
 ::  Ошибка если не найден.
@@ -93,7 +93,7 @@ rem Аргументы командной строки для rar.exe
 :: -hp    - зашифровать архив включая имена файлов
 :: -k     - заблокировать архив (защита от изменений)
 :: --     - больше нет аргументов
-%ArchiveProgram% a -cfg- -ma -htb -m5 -rr10p -ac -ow^
+%Archive_Program% a -cfg- -ma -htb -m5 -rr10p -ac -ow^
  -agDD.MM.YYYY -ep1 -hp%Password% -k "%Backup%" "%Source%" --
 
 rem Результат архивирования.
