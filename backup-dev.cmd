@@ -103,7 +103,6 @@ rem Результат архивирования.
 ::  Если ошибка записать в ее код в лог файл.
 if %ErrorLevel%==0 (
 	set Result="Архив создан успешно"
-	goto Move_Archive
 	) else (
 		set Result="Ошибка - %ErrorLevel%"
 		goto Error)
