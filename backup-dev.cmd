@@ -38,10 +38,7 @@ rem Тестовый режим
 ::  1 - включен, 0 - выключен
 set Test_Mode=0
 rem "Путь к каталогу с базами 1С Бухгалтерия".
-::   Если в пути есть пробелы, обязательно
-::   указывать в кавычках
-::   (английская раскладка клавиатуры).
-set Source="D:\1C\Base"
+set "Source=D:\1C\Base"
 rem За сколько дней хранить архивы
 set Number_Archives=30
 rem Пароль для архивов
@@ -55,11 +52,11 @@ rem Рабочий блок
 rem Путь к каталогу со скриптом.
 ::  %~dp0 – полный путь (включая завершающий слэш)
 ::  к каталогу выполняемого скрипта.
-set Backup=%~dp0
+set "Backup=%~dp0"
 rem Флаг наличие ошибок.
 set Error=0
 rem Файл логов (в каталоге со скриптом).
-set Log_File=%Backup%backup.log
+set "Log_File=%Backup%backup.log"
 
 rem Проверки путей.
 rem Если недоступен каталог с базами.
@@ -79,7 +76,7 @@ if exist "%PROGRAMFILES%\WinRAR\rar.exe" (
 
 rem Если сегодня архив уже был создан.
 ::  %DATE% текущая дата (системная переменная).
-if exist %Backup%\%DATE%.rar (goto Exist_Backup)
+if exist "%Backup%\%DATE%.rar" (goto Exist_Backup)
 
 rem Архивирование
 rem Аргументы командной строки для rar.exe
@@ -99,7 +96,7 @@ rem Аргументы командной строки для rar.exe
 :: -k     - заблокировать архив (защита от изменений)
 :: --     - больше нет аргументов
 %ArchiveProgram% a -cfg- -ma -htb -m5 -rr10p -ac -ow^
- -agDD.MM.YYYY -ep1 -hp%Password% -k %Backup% %Source% --
+ -agDD.MM.YYYY -ep1 -hp%Password% -k "%Backup%" "%Source%" --
 
 rem Результат архивирования.
 ::  %ErrorLevel% результат выполнения архивирования.
@@ -180,6 +177,7 @@ if %Test_Mode%==1 (
 	if %Error%==1 (color 0c
 		echo %Result%
 		pause)
+ )
 
 rem Восстанавливаем настройки
 ::  (на случай если скрипт запускался
