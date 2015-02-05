@@ -61,8 +61,6 @@ set "Log_File=%Backup%backup.log"
 rem Проверки путей.
 rem Если недоступен каталог с базами.
 if not exist "%Source%" (goto No_Source_Dir)
-rem Если недоступен каталог для архивов.
-if not exist "%Backup%" (goto No_Backup_Dir)
 
 rem Автоопределение пути к WinRar.
 ::  Ошибка если не найден.
