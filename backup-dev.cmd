@@ -74,7 +74,7 @@ if exist "%PROGRAMFILES%\WinRAR\rar.exe" (
 
 rem ≈сли сегодн€ архив уже был создан.
 ::  %DATE% текуща€ дата (системна€ переменна€).
-if exist "%Backup%\%DATE%.rar" (goto Exist_Backup)
+if exist "%Backup%%DATE%.rar" (goto Exist_Backup)
 
 rem јрхивирование
 rem јргументы командной строки дл€ rar.exe
