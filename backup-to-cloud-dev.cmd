@@ -201,6 +201,7 @@ if %Test_Mode%==1 (
 	if %Error%==1 (color 0c
 		echo %Result%
 		pause)
+ )
 
 rem Восстанавливаем настройки
 ::  (на случай если скрипт запускался
