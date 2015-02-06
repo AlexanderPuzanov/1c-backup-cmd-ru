@@ -59,7 +59,8 @@ set "Backup=%~dp0"
 set "Backup=%Backup:~0,-1%"
 rem Флаг наличие ошибок.
 set Error=0
-rem Файл логов (в каталоге со скриптом).
+rem Путь к файлу с логами.
+::  Если файла нет будет создан.
 set "Log_File=%Backup%\backup.log"
 
 rem Проверки путей.
