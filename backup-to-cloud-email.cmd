@@ -22,6 +22,7 @@ https://disk.yandex.ru/download/YandexDiskSetup.exe
 Каталог в котором будет размещен скрипт
 будет использован для создания
 временных файлов в процессе работы.
+Внимание!!! В пути не должно быть пробелов!!!
 --------------------------------------
 Пакетный файл написан 27/01/2015
 Последнее исправление внесено 03/02/2015
@@ -79,7 +80,7 @@ for /f "tokens=1 delims=@" %%i in ('echo %Email_Sender%') do (
 	set Email_Login=%%i)
 set Sender_Name="Сервер — %computername%"
 
-set Path_Script="%~dp0"
+set Path_Script=%~dp0
 set Error=0
 set Log_File=%Path_Script%backup.log
 
@@ -168,7 +169,7 @@ if %DATE:~0,2%==1 (
 
 if %Test_Mode%==1 (
 	set Email_To_Subject="Тестовое письмо"
-	set Email_To_Text="%Result%"
+	set Email_To_Text=%Result%
 	set Email_Send_Attach=-attach %Log_File%,text/plain,a
 	goto Email_Send)
 
@@ -185,8 +186,7 @@ goto Skip_Email_Send
  -t %Email_To%^
  -cs "Windows-1251"^
  -enc-type "7bit"^
- -name %Sender_Name%^ 
- -sub %Email_To_Subject%^
+ -name %Sender_Name% -sub %Email_To_Subject%^
  -M %Email_To_Text%^
  %Email_Send_Attach%
  

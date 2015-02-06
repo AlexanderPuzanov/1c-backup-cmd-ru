@@ -91,6 +91,7 @@ rem Путь к каталогу со скриптом.
 ::  к каталогу выполняемого скрипта.
 set "Path_Script=%~dp0"
 rem Флаг наличие ошибок.
+set Error=0
 set "Log_File=%Path_Script%backup.log"
 
 rem Проверки путей.
