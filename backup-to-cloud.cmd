@@ -13,7 +13,7 @@ goto Start
 Скрипт предназначен для работы
 с архиватором WinRar не ниже 5 версии.
 --------------------------------------
-Для синхранизации с облаком установить
+Для синхранизации с облаком установить:
 https://disk.yandex.ru/download/YandexDiskSetup.exe
 --------------------------------------
 Не размещать скрипт в каталоге
@@ -41,10 +41,7 @@ rem Тестовый режим.
 ::  1 - включен, 0 - выключен.
 set Test_Mode=0
 rem "Путь к каталогу с базами 1С Бухгалтерия".
-::   Если в пути есть пробелы, обязательно
-::   указывать в кавычках
-::   (английская раскладка клавиатуры).
-set Source="D:\1C\Base"
+set "Source=D:\1C\Base"
 rem За сколько дней хранить архивы.
 set Number_Archives=30
 rem Пароль для архивов.
@@ -52,18 +49,17 @@ set Password=123
 rem Максимальное количество строк в файле логов.
 set Number_Strings_Log=90
 rem Путь к каталогу синхронизации с облаком.
-rem Внимание!!! В пути не должно быть пробелов!!!
-set Backup=E:\YandexDisk\backup-1C
+set "Backup=E:\YandexDisk\backup-1C"
 rem --------------------------------------
 
 rem Рабочий блок
 
-set Path_Script="%~dp0"
+set "Path_Script=%~dp0"
 set Error=0
-set Log_File=%Path_Script%backup.log
+set "Log_File=%Path_Script%backup.log"
 
-if not exist %Source% (goto No_SourceDir)
-if not exist %Backup% (goto No_BackupDir)
+if not exist "%Source%" (goto No_Source_Dir)
+if not exist "%Backup%" (goto No_Backup_Dir)
 
 if exist "%PROGRAMFILES%\WinRAR\rar.exe" (
 	set Archive_Program="%PROGRAMFILES%\WinRAR\rar.exe"
@@ -73,10 +69,10 @@ if exist "%PROGRAMFILES%\WinRAR\rar.exe" (
 			) else (goto No_Archive_Program)
 		)
 
-if exist %Backup%\%DATE%.rar (goto Exist_Backup)
+if exist "%Backup%\%DATE%.rar" (goto Exist_Backup)
 
-%Archive_Program% a -cfg- -ma -htb -m5 -rr10p -ac -ow^
- -agDD.MM.YYYY -ep1 -hp%Password% -k %Path_Script% %Source% --
+%Archive_Program% a -cfg- -ma -htb -m5 -rr10p -ow^
+ -agDD.MM.YYYY -ep1 -hp%Password% -k "%Path_Script%" "%Source%" --
 
 if %ErrorLevel%==0 (
 	set Result="Архив создан успешно"
@@ -86,9 +82,9 @@ if %ErrorLevel%==0 (
 		goto Error)
 
 :Move_Archive
-move %Path_Script%%DATE%.rar %Backup%
+move "%Path_Script%%DATE%.rar" "%Backup%"
 
-if exist %Backup%\%DATE%.rar (
+if exist "%Backup%\%DATE%.rar" (
 	set Result="Задание выполнено успешно"
 	) else (set Result="Ошибка копирования файла"
 		goto Error)
@@ -115,29 +111,31 @@ goto Log
 set Error=1
 
 :Log
-set "Logging=echo %DATE% %TIME% %Result% >> "%Log_File%""
+set "Logging=echo %DATE% %TIME% %Result%>>"%Log_File%""
 if exist "%Log_File%" (
 	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
 		if %%i lss %Number_Strings_Log% (
 			%Logging%
 			) else (
-				<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
+				<"%Log_File%" more +1>.tmp
+				>"%Log_File%" type .tmp
 				del .tmp
 				%Logging%)
 		)
-	) else (
-		%Logging%)
+			) else (
+				%Logging%)
 
-copy /y %Log_File% %Backup%
+if exist "%Backup%" (copy /y "%Log_File%" "%Backup%")
 
-if exist %Backup%\%DATE%.rar (
-	forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C ^
+if exist "%Backup%\%DATE%.rar" (
+	forfiles /P "%Backup%" /M *.rar /D -%Number_Archives% /C ^
 	"cmd /c del /q @PATH")
 
 if %Test_Mode%==1 (
 	if %Error%==1 (color 0c
 		echo %Result%
 		pause)
+ )
 
 color 07
 chcp %Prev_CP% >nul

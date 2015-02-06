@@ -14,8 +14,6 @@ goto Start
 --------------------------------------
 Разместить скрипт в каталоге
 для хранения резервных копий.
-ВНИМАНИЕ! Путь к катологу не должен 
-содержать пробелы!
 --------------------------------------
 Пакетный файл создан 24/01/2015
 Последнее исправление внесено 03/02/2015
@@ -36,10 +34,7 @@ rem Тестовый режим
 ::  1 - включен, 0 - выключен
 set Test_Mode=0
 rem "Путь к каталогу с базами 1С Бухгалтерия".
-::   Если в пути есть пробелы, обязательно
-::   указывать в кавычках
-::   (английская раскладка клавиатуры).
-set Source="D:\1C\Base"
+set "Source=D:\1C\Base"
 rem За сколько дней хранить архивы
 set Number_Archives=30
 rem Пароль для архивов
@@ -50,12 +45,12 @@ rem --------------------------------------
 
 rem Рабочий блок
 
-set Backup=%~dp0
+set "Backup=%~dp0"
+set "Backup=%Backup:~0,-1%"
 set Error=0
-set Log_File=%Backup%backup.log
+set "Log_File=%Backup%\backup.log"
 
-if not exist %Source% (goto No_SourceDir)
-if not exist %Backup% (goto No_BackupDir)
+if not exist "%Source%\" (goto No_Source_Dir)
 
 if exist "%PROGRAMFILES%\WinRAR\rar.exe" (
 	set Archive_Program="%PROGRAMFILES%\WinRAR\rar.exe"
@@ -65,14 +60,13 @@ if exist "%PROGRAMFILES%\WinRAR\rar.exe" (
 			) else (goto No_Archive_Program)
 		)
 
-if exist %Backup%\%DATE%.rar (goto Exist_Backup)
+if exist "%Backup%\%DATE%.rar" (goto Exist_Backup)
 
-%ArchiveProgram% a -cfg- -ma -htb -m5 -rr10p -ac -ow^
- -agDD.MM.YYYY -ep1 -hp%Password% -k %Backup% %Source% --
+%Archive_Program% a -cfg- -ma -htb -m5 -rr10p -ow^
+ -agDD.MM.YYYY -ep1 -hp%Password% -k "%Backup%\" "%Source%" --
 
 if %ErrorLevel%==0 (
 	set Result="Архив создан успешно"
-	goto Move_Archive
 	) else (
 		set Result="Ошибка - %ErrorLevel%"
 		goto Error)
@@ -99,27 +93,29 @@ goto Log
 set Error=1
 
 :Log
-set "Logging=echo %DATE% %TIME% %Result% >> "%Log_File%""
+set "Logging=echo %DATE% %TIME% %Result%>>"%Log_File%""
 if exist "%Log_File%" (
 	for /f %%i in ('"<"%Log_File%" find /c /v """') do (
 		if %%i lss %Number_Strings_Log% (
 			%Logging%
 			) else (
-				<"%Log_File%" more +1>.tmp> "%Log_File%" type .tmp
+				<"%Log_File%" more +1>.tmp
+				>"%Log_File%" type .tmp
 				del .tmp
 				%Logging%)
 		)
-	) else (
-		%Logging%)
+			) else (
+				%Logging%)
 
-if exist %Backup%\%DATE%.rar (
-	forfiles /P %Backup% /M *.rar /D -%Number_Archives% /C ^
+if exist "%Backup%\%DATE%.rar" (
+	forfiles /P "%Backup%" /M *.rar /D -%Number_Archives% /C ^
 	"cmd /c del /q @PATH")
 
 if %Test_Mode%==1 (
 	if %Error%==1 (color 0c
 		echo %Result%
 		pause)
+ )
 
 color 07
 chcp %Prev_CP% >nul
